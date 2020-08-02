@@ -75,7 +75,7 @@ add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileNa
 </div>
 <hr>
 <div id=file_divid>
-		<table id=file_attributesid border=1>
+		<table id=file_tableid border=1>
 				<tr><th colspan=2><h4 id="file_pathid" class="whiteOnDarkBlue">filepath</h4></th>
 						<tr><th>pin</th><th>hash</th>
 								<tr id=file_row0id class=file_row_class>
@@ -85,7 +85,7 @@ add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileNa
 						</tr>
 				</tr>
 		</table>
-		content:<br><textarea id=file_contentid>file's content</textarea>
+		content:<br><textarea id=file_textareaid>file's content</textarea>
 		<br>
 		save as <input id=file_pathsaveid name=pathname type=text value="/tmp/myfile.txt" placeholder="file-location-to-be-saved-to">
 		<button onclick="saveSingleFile()">save</button>
@@ -196,19 +196,19 @@ add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileNa
 		 console.error(callee+'.cur_item:',cur_item);
 		 
 		 if (cur_item.Type == 'Directory') {
-				 display_directory_content();  // FCC
+				 display_directory_table();  // FCC
 		 } else if (cur_item.Type == 'File') {
-				 display_file_content();       // FCC
+				 display_file_table();       // FCC
 		 } else {
 				 console.error(callee+'.cur_item.Type:',cur_item.Type);
 		 }
  }
 
- async function display_directory_content() { // FCC correct
+ async function display_directory_table() { // FCC correct
 		 let [callee, caller] = functionNameJS(); // logInfo("message !")
 		 console.log(callee+'.entering');
 
-     clear_display_directory_content();
+     clear_display_directory_table();
 
 		 let cur_item = await provideItem('curItem'); // FCC correct
 		 console.log(callee+'.cur_item:',cur_item);
@@ -265,7 +265,7 @@ add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileNa
 
  }
 
- function clear_display_directory_content() {
+ function clear_display_directory_table() {
 		 let [callee, caller] = functionNameJS(); // logInfo("message !")
 		 let e = document.getElementById('directory_tableid');
 		 console.log(callee+'.template_row:',e.rows[2]);
@@ -421,7 +421,7 @@ add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileNa
      }
  }
 
- async function display_file_content() {
+ async function display_file_table() {
 		 let [callee, caller] = functionNameJS();
 		 console.log(callee+'.entering');
 		 console.log(callee+'.stored["curItem"]: ',stored['curItem']);
@@ -452,7 +452,7 @@ add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileNa
 		 document.getElementById('file_pathid').innerHTML = cur_item.Path;
 		 document.getElementById('file_pathsaveid').value = cur_item.Path;
 
-		 let file_table = document.getElementById('file_attributesid');
+		 let file_table = document.getElementById('file_tableid');
 		 console.log(callee+'.file_table:',file_table);
 		 let row2 = file_table.rows[2];
 		 console.log(callee+'.row2:',row2);
@@ -467,7 +467,7 @@ add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileNa
      file_hash_link.href = 'http://127.0.0.1:8080/ipfs/'+hash
      console.log(callee+'.file_hash_link: ',file_hash_link);
 
-		 document.getElementById('file_contentid').value = content;
+		 document.getElementById('file_textareaid').value = content;
 		 document.getElementById('directory_divid').style.display = 'none'
 		 document.getElementById('file_divid').style.display = ''
  }

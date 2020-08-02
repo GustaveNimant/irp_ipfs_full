@@ -279,10 +279,10 @@ function saveSingleFile() {
 		let file_path = document.getElementById('file_pathsaveid').value;
 		console.log(callee+'.file_path:',file_path);
 		
-		let file_content = document.getElementById("file_contentid").value;
-		console.log(callee+'.file_content:',file_content);
+		let file_textarea = document.getElementById("file_textareaid").value;
+		console.log(callee+'.file_textarea:',file_textarea);
 		
-		return ipfsWriteText(file_path, file_content) // v0.6.0 truncate works !!!
+		return ipfsWriteText(file_path, file_textarea) // v0.6.0 truncate works !!!
 				.then ( hash => {
 						stored['curItem'].Hash = hash
 						stored['curItem'].FullStatus = null

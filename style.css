@@ -5,7 +5,7 @@ a.nodeco {
  text-decoration: none;
  color: #234;
 }
-textarea#file_contentid {
+textarea#file_textareaid {
   width: 90vw;
   height: 24em; // rows: 24;
 }
