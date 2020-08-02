@@ -260,15 +260,14 @@ async function publishHistory(item) {
    .catch(logError)
  */
 
-function closeSingleFile() {
+function closeSingleFile() { // FCC Not clear
 		let [callee, caller] = functionNameJS();
 		console.log(callee+'.entering');
-		//		 console.log(callee+'.item',item);
+
 		console.log(callee+'.stored',stored);
-		// FCC item global ?
-		let item = stored['curItem'] // FCC added
+		let item = stored['curItem'] // FCC added ????
+		stored['curItem'] = null  // to use provideItem in display
 		document.getElementById('mfs_pathinputid').value = item.DirName
-		stored['curItem'] = null
 		display()
 }
 
@@ -276,20 +275,20 @@ function saveSingleFile() {
 		let [callee, caller] = functionNameJS();
 		console.log(callee+'.entering');
 		
-		let file_path = document.getElementById('file_pathsaveid').value;
-		console.log(callee+'.file_path:',file_path);
+		let file_pathsave = document.getElementById('file_pathsaveid').value;
+		console.log(callee+'.file_pathsave:',file_pathsave);
 		
 		let file_textarea = document.getElementById("file_textareaid").value;
 		console.log(callee+'.file_textarea:',file_textarea);
 		
-		return ipfsWriteText(file_path, file_textarea) // v0.6.0 truncate works !!!
+		return ipfsWriteText(file_pathsave, file_textarea) // v0.6.0 truncate works !!!
 				.then ( hash => {
 						stored['curItem'].Hash = hash
 						stored['curItem'].FullStatus = null
 						//stored['curItem'] = null;
 						console.log(callee+'.stored["curItem"]:',stored['curItem']);
 						display()
-						console.log(callee+'file_path: '+file_path+' updated')
+						console.log(callee+'file_pathsave: '+file_pathsave+' updated')
 				})
 				.catch(err => console.error(err))
 } 

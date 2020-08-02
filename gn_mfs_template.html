@@ -229,7 +229,7 @@ add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileNa
 
 		 let table_of_content = table.TOC
 		 console.log(callee+'.table_of_content:',table_of_content);
-     let te = document.getElementById('directory_tableid')
+     let directory_table = document.getElementById('directory_tableid')
 
      document.getElementById('directory_pathid').innerHTML = mfs_path
      document.getElementById('directory_divid').style.display = ''
@@ -261,7 +261,7 @@ add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileNa
 				 console.log(callee+'.row: ',item.FullStatus, filename, hash, type);
 				 display_row(item);
 		 }
-		 console.log('table: '+ te.rows.length + ' rows')
+		 console.log(callee+'.directory_table: '+ directory_table.rows.length + ' rows')
 
  }
 
