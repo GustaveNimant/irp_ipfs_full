@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+
+<script src="js/sha256.js" type="text/javascript"></script>
+<script src="js/js-yaml.js" type="text/javascript"></script>
+<script src="js/essential.js" type="text/javascript"></script>
+<script src="js/ipfs.js" type="text/javascript"></script>
+<script> console.log(' Hi !') </script>
+
+<p>This is a resolver</p>
+NID: <span id=nid>:nid</span>
+<br>URN: <input id=urn onchange="urnChange(event)" value="urn:nickname:/mfs/path" size="36"/>
+<br><span id=resolve>RESOLVING:</span> <a id="jump" href="#">...</a>
+<button id=redirect>REDIRECT</button>
+<meta http-equiv="refresh" id="meta-refresh"/>
+<script>
+
+async function urnChange(ev) {
+ uri = ev.target.value
+   let [,nic,nss] = uri.split(':',3)
+      console.log('urnChange.nic:',nic)
+      console.log('urnChange.nss:',nss);
+   document.getElementById('resolve').innerHTML = 'RESOLVING:';
+   document.getElementById('jump').innerHTML = '...';
+   let [nid,urn,address] = await resolver(uri)
+   urnDisplay(nid,urn,address)
+   TBD('continue later !')
+
+}
+
+async function main() {
+   console.dir(document.location);
+   let fragment = document.location.hash.slice(1)
+   console.log('resolver.fragment:',fragment);
+   uri = fragment;
+   if (uri != '') {
+      document.getElementById('urn').value=uri;
+      let [nid,urn,address] = await resolver(uri);
+      urnDisplay(nid,urn,address)
+   }
+}
+main()
+
+function urnDisplay(nid,urn,address) {
+   document.getElementById('nid').innerHTML=nid;
+   document.getElementById('urn').value=urn;
+   a = document.getElementById('jump');
+   a.href= gw_url + address;
+   a.innerHTML = address;
+   document.getElementById('meta-refresh').content = "120; url="+gw_url+address;
+   if (address.match('404.htm')) {
+      document.getElementById('resolve').innerHTML = '<font color=red>UNRESOLVED:</font>';
+   } else {
+      document.getElementById('resolve').innerHTML = 'RESOLVED TO';
+   }
+   document.getElementById('redirect').onclick = (ev => {
+         document.location.href = gw_url + address;
+         });
+}
+
+async function resolver(uri) {
+   let [,nid,nss] = uri.split(':',3)
+      console.log('resolver.nid:',nid)
+      console.log('resolver.nss:',nss);
+   let [mut,path] = nss.split('/./',2)
+   if (typeof(path) != 'undefined') { mut += '/' }
+   console.log('resolver.mut:',mut);
+   console.log('resolver.path:',path);
+   
+
+   let peerids_yaml = await getMFSFileContent('/my/friends/peerids.yml');
+
+   if (typeof(peerids_yaml.Code) == 'undefined') {
+      peerids = window.jsyaml.safeLoad(peerids_yaml);
+   } else {
+      console.log('get yaml failed...')
+         peerids = {};
+   }
+
+   var peerid = await Promise.resolve(promisedPeerId);
+   let localnid = getNid('urn:ipns:'+peerid);
+   console.log('localnid:',localnid);
+   console.log('peerids:',peerids);
+   peerids[localnid] = {
+      'peerkey': peerid, "nickname": 'self', "trust": '1', "peerid": peerid };
+
+   for (let id of Object.keys(peerids)) { // making peerids iterable
+      let nick = peerids[id].nickname;
+      if (nick == nid) {
+         let key = peerids[id].peerkey
+            console.error(id+':'+nick+':'+key)
+            uri = uri.replace(nick,id)
+            nid = id
+      }
+   }
+   console.log('nid:',nid);
+
+   if (typeof(peerids[nid]) != 'undefined') {
+      let nickname= peerids[nid]['nickname'];
+      if (typeof(nickname) != 'undefined') {
+         urn = uri.replace(nid,nickname)
+      }
+      peerkey = peerids[nid]['peerkey'];
+      console.log('peerkey:',peerkey);
+      let address = '/ipfs/QmU1u5ZiH7QFm3dxU8rBgF8FjnHaSYq5KyNePnyH64EVfy/404.htm';
+      if (mut == '/.brings/') {
+        address = '/ipns/'+peerkey+'/'
+      } else {
+         let [shard,hashkey] = shard_n_key(mut)
+            console.log('hashkey:',hashkey);
+         let brurl = '/ipns/'+peerkey+'/shards/'+shard+'/brindex.log'
+            console.log('brurl:',brurl);
+         let index_yaml = await ipfsGetFileContent(brurl);
+         if (typeof(index_yaml.Code) != 'undefined') {
+            console.error('index_yaml:',index_yaml);
+            window.stop() // cancel the redirect
+         } else {
+            let lines = index_yaml.split("\n");
+            for (line of lines) { 
+               let result = line.match(RegExp('^'+hashkey+': (.*)'));
+               if (result) {
+                  address = result[1]
+                  console.log('address: ',address);
+               }
+            }
+         }
+      }
+      if (typeof(path) != 'undefined') {
+         address += path
+      }
+      console.log('address: ',address);
+      return [nid,urn,address];
+   } else {
+      let address = '/ipfs/QmU1u5ZiH7QFm3dxU8rBgF8FjnHaSYq5KyNePnyH64EVfy/404.htm';
+      return [nid,uri,address];
+   }
+
+
+}
+
+function TBD(m) {
+  console.error(m)
+}
+
+</script>

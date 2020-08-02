@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta charset="utf-8">
+	<title>Mfs Files Management</title>
+	<link rel="stylesheet" href="style.css"> 
+
+  <!--
+       <script src="../mychelium/js/src/sha256.min.js" crossorigin="anonymous"></script>
+	     <script src="../snippets/js/essential.js"></script>
+	     <script id=js src="../jsring/js/ipfs.js"></script>
+
+	     <script src="../snippets/js/mychelium.js"></script>
+	--> <!--
+	     /!\ doesn't work due to "text/plain" i.e. a proxy
+  <script src="https://cdn.jsdelivr.net/gh/mychelium/js@9768641/dist/sha256.min.js" integrity="sha256-YIafx9wlTYK6CHM0cY15DbyqIN2pA/Yy4QpMrwf9Cpg=" crossorigin="anonymous"></script>
+	<script src="https://raw.githubusercontent.com/michel47/snippets/master/js/essential.js"></script>
+	<script src="https://github.com/michel47/snippets/raw/7ea10/js/essential.js"></script>
+	<script class=exp src="https://willforge.github.io/jsring/js/ipfs.js"></script>
+
+	<script src="https://michel47.github.io/snippets/js/mychelium.js"></script>
+	<script src="https://michel47.github.io/snippets/js/essential.js"></script>
+	--> <!--
+	-->
+	<script src="js/sha256.js"></script>
+	<script src="js/essential.js"></script>
+	<script class=exp src="js/ipfs.js"></script>
+</head>
+
+<body>
+
+<div id=inputdivid>
+<h2>Inputs</h2>
+mfs: <input type=text id=mfs_pathinputid placeholder="mfs_path" size=56 value="/">
+<button type=button onclick="action('Clear & Display')">display</button>
+</div>
+<hr>
+<div id=adddivid>
+add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileName(this)"> add under name
+<input type="text" name="filepath" value="" placeholder="mfs file path" id="file_addpathid">
+<button name=add onclick="action('Upload & Display')">OK</button>
+</div>
+<hr>
+<h2>Outputs</h2>
+<div id=directory_divid>
+<table id=directory_contentid border=1>
+    <thead>
+    <tr><th colspan=6><h4 id="directory_pathid" class="whiteOnDarkBlue">directoryPath</h4></th></tr>
+    <tr><th>pin</th><th>type</th><th>name</th><th>hash</th><th>publish</th><th>permanent link</th></tr>
+    </thead>
+    <tbody>
+    <tr id=dir_row0id class=ls_row">
+				<td class="pin_status">
+						<button class="pin_status_click" name="QmHash" onclick="alert('clicked')">pinStatus</button>
+						<span class="pin_status_span"> through <a href="#" class=pin_status_link>QmHash</a></span>
+				</td>
+				<td class=file_type>fileType</td>
+				<td class=file_name><a class="file_name_click" href=#>fileName</a></td>
+				<td class=file_hash><a class="file_hash_link nodeco" href=#>QmHash</a></td>
+				<td class=file_publish><button class="file_publish_click">Publish</button></td>
+				<!-- urn:ipns:peerid:/mfs_path
+						 urn:ipms:publicname:/mfs_path : need to be register ...  !
+						 urn:nid:/mfs_path w/ nid=hash(urn:ipns:peerid) or nid=hash(urn:dns:example.com)
+						 
+						 nid solely gives access to the (br)index.log (not the folder containing the data)
+						 
+						 nid=hash(urn:ipns:peerid)
+						 idxkey = hash(/mfs_dir/./path/file.txt) 
+						 
+				-->
+				<td class=perma_url><a class=perma_url_link href="#" title="permanent link">urn:nid:/mfs_path</a></td>
+    </tr>
+    </tbody>
+</table>
+</div>
+<hr>
+<div id=file_divid>
+		<table id=file_attributesid border=1>
+				<tr><th colspan=2><h4 id="file_pathid" class="whiteOnDarkBlue">filepath</h4></th>
+						<tr><th>pin</th><th>hash</th>
+								<tr id=file_row0id class=file_row_class>
+										<td class="pin_cell_status" name="mHash">unpinned</td>
+										<td class="file_cell_hash"><a class=file_hash_link href=#>Qm12345</a></td>
+								</tr>
+						</tr>
+				</tr>
+		</table>
+		content:<br><textarea id=file_contentid>file's content</textarea>
+		<br>
+		save as <input id=file_pathsaveid name=pathname type=text value="/tmp/myfile.txt" placeholder="file-location-to-be-saved-to">
+		<button onclick="saveSingleFile()">save</button>
+		<button onclick="closeSingleFile()">close</button> 
+</div>
+
+</body>
+
+<script src="gn_functionScript.js"></script>
+<script>
+ // type mapping
+ const typenames = [ 'file','dir','link','others','...' ]
+ const typedesc = [ 'File','Directory','Link','Others','...' ]
+
+ var stored = {};
+
+
+ // main build
+
+ // all async function NEEDs to return the promise
+
+ // IRP Rules :
+ // -----------
+ // no (variable) parameter in provide
+ // only builds have arguments...
+ // getdata can also have arguments (leaves)
+ // display* function are outputs
+ // build and display are NOT async function (not promises)
+ //
+ // (external) provide that requires a fetch can be done via an async
+ // getdata* which do the fetch are promises
+
+ // provide create deps tree
+ // provide check stored[]
+ // build store in stored[]
+ // getdata do the clean 
+
+
+ // NOTE FOR NEXT TIME (TBD) :
+
+ // remove and publish
+ // build dependency tree... (2 nodes)
+
+
+ display();
+
+ function action(what) {
+		 let [callee, caller] = functionNameJS(); // logInfo("message !")
+		 console.log(callee+'.input.what:'+what);
+
+		 switch (what) {
+				 case 'Upload & Display':
+						 uploadFile().then( _ => { display() });
+						 // /!\ do not do .then(display()) !
+						 // or uploadFile().then(display);
+						 break;
+
+				 case 'Clear & Display':
+				 default: 
+						 stored['curItem']=null;
+						 display();
+		 }
+ }
+
+ function preFillFileName(obj) {
+		 let [callee, caller] = functionNameJS(); // logInfo("message !")
+		 console.log(callee+'.obj:',obj)
+		 console.log(callee+'.obj.files:',obj.files)
+
+		 let mfs_path = document.getElementById('mfs_pathinputid').value
+		 let file_addpath = mfs_path + obj.files[0].name
+		 document.getElementById('file_addpathid').value = file_addpath
+ }
+
+ async function uploadFile() {
+		 let [callee, caller] = functionNameJS(); // logInfo("message !")
+		 let file_addpath = document.getElementById('file_addpathid').value;
+		 let file = document.getElementById('FakePathId').files[0]
+		 let content = await getFileContent(file);
+
+		 console.log(callee+'.file_addpath:',file_addpath)
+		 console.log(callee+'.file:',file)
+		 console.log(callee+'content:',content)
+
+		 let hash = await ipfsWriteBinary(file_addpath, content)
+		 console.log(callee+'.write-completed:', hash);
+		 return hash;
+ }
+
+ function getFileContent(file) {
+		 let [callee, caller] = functionNameJS(); // logInfo("message !")
+		 let reader = new FileReader();
+     reader.readAsBinaryString(file)
+		 
+		 return load(reader)
+				 .then( event => {
+						 console.log(callee+'.event:',event)
+						 let content = event.target.result;
+						 return content
+         })
+				 .catch(console.error)
+ }
+
+ async function display() {
+		 let [callee, caller] = functionNameJS(); // logInfo("message !")
+		 console.error(callee+'.info: entered');
+		 let cur_item = await provideItem('curItem');
+		 console.error(callee+'.cur_item:',cur_item);
+		 
+		 if (cur_item.Type == 'Directory') {
+				 display_directory_content();
+		 } else if (cur_item.Type == 'File') {
+				 display_file_content();
+		 } else {
+				 console.error(callee+'.cur_item.Type:',cur_item.Type);
+		 }
+ }
+
+ async function display_directory_content() {
+		 let [callee, caller] = functionNameJS(); // logInfo("message !")
+		 console.log(callee+'.entering');
+
+		 let cur_item = await provideItem('curItem'); // FCC correct
+		 console.log(callee+'.cur_item:',cur_item);
+
+		 let mfs_path = cur_item.Path
+     let immutable = mfs_path.match(new RegExp('/ip[fn]s'))
+     if (immutable) { // special reduction for /ipfs/Qm1234/..
+         // mfs_path = root + mfs_path
+         // root = /ipfs%2FQm or / 
+         mfs_path = mfs_path.replace(new RegExp('[^/]+/\.\./'),'') // TBD
+         mfs_path = mfs_path.replace(new RegExp('/ip[fn]s/$'),'/')
+     } else {
+         mfs_path = mfs_path.replace(new RegExp('[^/]+/\.\./'),'')
+     }
+		 console.log(callee+'.mfs_path:',mfs_path);
+
+		 let table = await fetch_directory_content(mfs_path);
+
+		 let table_of_content = table.TOC
+		 console.log(callee+'.table_of_content:',table_of_content);
+     let te = document.getElementById('directory_contentid')
+
+     document.getElementById('directory_pathid').innerHTML = mfs_path
+     document.getElementById('directory_divid').style.display = ''
+     document.getElementById('file_divid').style.display = 'none'
+
+     clear_display_directory_content();
+
+		 for (item of table_of_content) {
+				 console.log(callee+'.item:',item);
+				 console.log(callee+'.mfs_path:',mfs_path);
+				 console.log(callee+'.item.DirName:',item.DirName);
+
+				 item.DirName = mfs_path;  // FCC DirName is undefined !!!!
+				 let filename = item.Name;
+				 //stored['item'] = item;
+				 let hash = item.Hash;
+				 let type = item.Type;
+				 let size = item.Size;
+
+				 // FCC should be included in provideItem
+				 item.FullStatus = await getPinStatus(hash);
+
+				 if (type == 'Directory') { // append a trailing / to directories
+						 filename += '/';
+				 }
+				 item.Path = mfs_path + filename; // FCC Path NOT to be overwritten
+
+				 console.log(callee+'.row: ',item.FullStatus, filename, hash, type);
+				 display_row(item);
+		 }
+		 console.log('table: '+ te.rows.length + ' rows')
+
+ }
+
+ function clear_display_directory_content() {
+		 let [callee, caller] = functionNameJS(); // logInfo("message !")
+		 let e = document.getElementById('directory_contentid');
+		 console.log(callee+'.template_row:',e.rows[2]);
+		 e.rows[2].style.display='none';
+
+		 for (i = e.rows.length-1; i > 2; i--) {
+				 e.deleteRow(i)
+		 }
+		 //console.log('nrow after delete:',e.rows.length)
+ }
+
+ function display_row(item) {
+		 let [callee, caller] = functionNameJS(); // logInfo("message !");
+		 console.log(callee+'.input.item',item);
+
+		 let table = document.getElementById('directory_contentid');
+		 let lastrow = table.rows.length-1;
+		 let row = table.rows[lastrow];
+		 let newrow = table.insertRow(-1); // insert in last position;
+		 newrow.innerHTML = row.innerHTML; // copy previous row content
+
+		 newrow.setAttribute('id', item.Hash) // use for toglepin's row-identification
+     console.log(callee+'.newrow:',newrow);
+
+		 display_pin(item, newrow);
+
+		 let file_type = newrow.getElementsByClassName('file_type')[0];
+		 file_type.innerHTML = item.Type; // typenames[item.Type];
+     console.log(callee+'.file_type:',file_type);
+
+		 let file_name_click = newrow.getElementsByClassName('file_name_click')[0];
+		 console.log(callee+'.file_name_click:',file_name_click);
+
+		 // FCC Bug fixed here
+		 file_name_click.onclick = function() {
+				 document.getElementById('mfs_pathinputid').value = item.Path // FCC
+				 stored['curItem'] = null // FCC provideItem is not used properly
+				 // stored['curItem'] = item // FCC provideItem is not used properly
+         display();
+		 }
+		 file_name_click.innerHTML = item.Name;
+
+		 let file_hash_link=newrow.getElementsByClassName('file_hash_link')[0];
+		 console.log(callee+'.file_hash_link',file_hash_link);
+		 file_hash_link.href = 'http://localhost:8080/ipfs/'+item.Hash;
+		 file_hash_link.innerHTML = item.Hash;
+
+		 let file_publish_click = newrow.getElementsByClassName('file_publish_click')[0];
+		 console.log(callee+'.file_publish_click:',file_publish_click);
+		 file_publish_click.onclick = async function () {
+				 publishHistory(item); // FCC return not used
+				 let urn = update_perma_url_link(item); // FCC urn ???
+				 let path = await ipfsPublish(item.Path);
+				 console.log(callee+'.path:',path);
+				 return path
+		 }
+
+		 console.log(callee+'.result.newrow: ',newrow);
+ }
+
+ async function update_perma_url_link(item) {
+		 let [callee, caller] = functionNameJS(); // logInfo("message !");
+		 console.log(callee+'.input.item:',item);
+
+		 var peerid = await Promise.resolve(promisedPeerId);
+		 let row = document.getElementById(item.Hash);
+		 console.log(callee+'.row:',row);
+		 let perma_url_link = row.getElementsByClassName('perma_url_link')[0];
+
+		 console.log(callee+'.perma_url_link.href:',perma_url_link.href);
+		 let ns36 = getNid('urn:ipns:'+peerid)
+		 let urn = 'urn:' + ns36  + ':' + item.Path
+		 const qmresolver = 'QmThhn7niLeuEfCMXhS1SmYgNFobokPxsobveN7RXVeUpk'
+		 // perma_url_link.href= 'http://resolver.localhost:8080/ipfs/'+qmresolver+'/#'+urn 
+		 perma_url_link.href= './resolver.html#'+urn 
+		 perma_url_link.innerHTML= urn
+		 console.log(callee+'.perma_url_link:',perma_url_link);
+		 return urn
+ }
+
+ function display_pin(item, row) {
+		 let [callee, caller] = functionNameJS(); // logInfo("message !");
+		 console.log(callee+'.input.item:',item);
+		 console.log(callee+'.input.row:',row);
+
+		 let [pin_status, pin_through] = splitPinFullStatus(item.FullStatus);
+		 console.log(callee+'.pin_status:',pin_status);
+		 console.log(callee+'.pin_through:',pin_through);
+
+		 let pin_status_link = row.getElementsByClassName('pin_status_link')[0];
+		 let pin_status_span = row.getElementsByClassName('pin_status_span')[0];
+
+		 // FCC is that correct ? should use provideItem
+		 if (pin_status == 'indirect') {
+				 pin_status_link.onclick = function () {
+						 let new_path = '/ipfs/'+pin_through+'/';
+						 console.log(callee+'.indirect.pin.new_path:',new_path);
+
+						 // FCC is that correct ? Path and Name are additions.
+						 document.getElementById('mfs_pathinputid').value = new_path
+             stored['curItem'] = { Path:new_path, Hash:pin_through, Type:'Directory', Size:0, DirName:'/',Name:new_path }
+						 display()
+				 }
+				 pin_status_link.innerHTML = pin_through.substr(0,9);
+				 //pin_status_link.href = 'http://localhost:8080/ipfs/'+pin_through
+				 //pin_status_link.deleteAttribute('href')
+
+				 console.log(callee+'.pin_status_link:',pin_status_link);
+
+				 pin_status_span.style.display = ''; // display it !
+		 } else {
+				 pin_status_span.style.display = 'none'
+		 }
+
+		 let pin_status_click = row.getElementsByClassName('pin_status_click')[0]
+		 console.log(callee+'.pin_status_click:',pin_status_click);
+     pin_status_click.innerHTML = pin_status
+     pin_status_click.setAttribute('name', item.Hash) // update QmHash's name
+
+     pin_status_click.onclick = function() {
+         let [callee, caller] = functionNameJS();
+         let [cur_pin_status, pin_through] = splitPinFullStatus(item.FullStatus)
+         console.log(callee+'.item.FullStatus:',item.FullStatus);
+         console.log(callee+'.cur_pin_status:',cur_pin_status);
+
+         return togglePinStatus(cur_pin_status,item.Hash)
+             .then( full_status => {  
+                 console.log(callee+'.full_status: ',full_status);
+                 item.FullStatus = full_status
+                 let [new_pin_status, qm_through] = splitPinFullStatus(full_status) // update after toggle !
+
+                 let elems = document.getElementsByName(item.Hash)
+                 console.log(callee+'.elems: ',elems)
+                 for (let e of elems) {
+										 e.innerHTML = new_pin_status
+                 }
+                 if (new_pin_status == 'indirect') {
+										 pin_status_link.onclick = function () {
+												 let new_path = '/ipfs/'+qm_through+'/';
+												 console.log(callee+'.indirect.qm.new_path: ',new_path)
+												 // FCC is that correct ? Path and Name are additions.
+												 document.getElementById('mfs_pathinputid').value = new_path
+												 stored['curItem'] = { Path:new_path, Hash:qm_through, Type:'Directory', Size:0, DirName:'/',Name:new_path }
+												 display()
+
+										 }
+										 console.log(callee+'.pin_status_link: ',pin_status_link);
+										 pin_status_link.innerHTML = qm_through.substr(0,9);										 //pin_status_link.href = 'http://localhost:8080/ipfs/'+qm_through
+										 pin_status_span.style.display = ''; // display it !
+                 }
+
+             })
+     }
+ }
+
+ async function display_file_content() {
+		 let [callee, caller] = functionNameJS();
+		 console.log(callee+'.entering');
+		 console.log(callee+'.stored["curItem"]: ',stored['curItem']);
+
+		 let cur_item = await provideItem('curItem'); // FCC correct
+		 console.log(callee+'.cur_item:',cur_item);
+
+		 let cur_path = cur_item.Path;
+		 let content;
+		 if ( cur_path.match(new RegExp('/ip[fn]s/')) ) {
+				 content = await getContentofIpfsPath(cur_path);
+		 } else {
+				 content = await getContentofMfsPath(cur_path);
+		 }
+
+		 let hash = cur_item.Hash;
+		 console.log(callee+'.cur_item.Hash: ',cur_item.Hash);
+		 if(typeof(cur_item.FullStatus) == 'undefined' || cur_item.FullStatus == null) {
+				 cur_item.FullStatus = await getPinStatus(hash)
+		 }
+
+		 console.log(callee+'.cur_item.FullStatus: ',cur_item.FullStatus);
+		 let [pin_status, pin_through] = splitPinFullStatus(cur_item.FullStatus);
+
+		 console.log(callee+'.pin_status:',pin_status);
+		 console.log(callee+'.pin_through:',pin_through);
+
+		 document.getElementById('file_pathid').innerHTML = cur_item.Path;
+		 document.getElementById('file_pathsaveid').value = cur_item.Path;
+
+		 let file_table = document.getElementById('file_attributesid');
+		 console.log(callee+'.file_table:',file_table);
+		 let row2 = file_table.rows[2];
+		 console.log(callee+'.row2:',row2);
+
+		 let pin_cell_status = row2.getElementsByClassName('pin_cell_status')[0]
+		 console.log(callee+'.pin_cell_status:',pin_cell_status);
+		 // FCC ???   pin_cell_status.setAttribute('name', hash); // update attribute name w/ QmHash's value
+		 pin_cell_status.innerHTML = pin_status;
+
+		 let file_hash_link = row2.getElementsByClassName('file_hash_link')[0]
+     file_hash_link.innerHTML = hash
+     file_hash_link.href = 'http://127.0.0.1:8080/ipfs/'+hash
+     console.log(callee+'.file_hash_link: ',file_hash_link);
+
+		 document.getElementById('file_contentid').value = content;
+		 document.getElementById('directory_divid').style.display = 'none'
+		 document.getElementById('file_divid').style.display = ''
+ }
+
+</script>
+
+</html>
