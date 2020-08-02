@@ -43,7 +43,7 @@ add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileNa
 <hr>
 <h2>Outputs</h2>
 <div id=directory_divid>
-<table id=directory_contentid border=1>
+<table id=directory_tableid border=1>
     <thead>
     <tr><th colspan=6><h4 id="directory_pathid" class="whiteOnDarkBlue">directoryPath</h4></th></tr>
     <tr><th>pin</th><th>type</th><th>name</th><th>hash</th><th>publish</th><th>permanent link</th></tr>
@@ -196,17 +196,19 @@ add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileNa
 		 console.error(callee+'.cur_item:',cur_item);
 		 
 		 if (cur_item.Type == 'Directory') {
-				 display_directory_content();
+				 display_directory_content();  // FCC
 		 } else if (cur_item.Type == 'File') {
-				 display_file_content();
+				 display_file_content();       // FCC
 		 } else {
 				 console.error(callee+'.cur_item.Type:',cur_item.Type);
 		 }
  }
 
- async function display_directory_content() {
+ async function display_directory_content() { // FCC correct
 		 let [callee, caller] = functionNameJS(); // logInfo("message !")
 		 console.log(callee+'.entering');
+
+     clear_display_directory_content();
 
 		 let cur_item = await provideItem('curItem'); // FCC correct
 		 console.log(callee+'.cur_item:',cur_item);
@@ -227,34 +229,35 @@ add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileNa
 
 		 let table_of_content = table.TOC
 		 console.log(callee+'.table_of_content:',table_of_content);
-     let te = document.getElementById('directory_contentid')
+     let te = document.getElementById('directory_tableid')
 
      document.getElementById('directory_pathid').innerHTML = mfs_path
      document.getElementById('directory_divid').style.display = ''
      document.getElementById('file_divid').style.display = 'none'
 
-     clear_display_directory_content();
-
-		 for (item of table_of_content) {
+		 for (let item of table_of_content) {
+				 console.log(callee+'===================')
 				 console.log(callee+'.item:',item);
 				 console.log(callee+'.mfs_path:',mfs_path);
 				 console.log(callee+'.item.DirName:',item.DirName);
+				 console.log(callee+'.item.Path:',item.Path);
+				 console.log(callee+'.item.Hash:',item.Hash);
 
-				 item.DirName = mfs_path;  // FCC DirName is undefined !!!!
 				 let filename = item.Name;
-				 //stored['item'] = item;
 				 let hash = item.Hash;
 				 let type = item.Type;
 				 let size = item.Size;
 
+				 item.DirName = mfs_path;  // FCC DirName is undefined !!!!
 				 // FCC should be included in provideItem
 				 item.FullStatus = await getPinStatus(hash);
 
 				 if (type == 'Directory') { // append a trailing / to directories
 						 filename += '/';
 				 }
-				 item.Path = mfs_path + filename; // FCC Path NOT to be overwritten
 
+				 item.Path = mfs_path + filename; // FCC Path is undefined !!!
+				 
 				 console.log(callee+'.row: ',item.FullStatus, filename, hash, type);
 				 display_row(item);
 		 }
@@ -264,7 +267,7 @@ add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileNa
 
  function clear_display_directory_content() {
 		 let [callee, caller] = functionNameJS(); // logInfo("message !")
-		 let e = document.getElementById('directory_contentid');
+		 let e = document.getElementById('directory_tableid');
 		 console.log(callee+'.template_row:',e.rows[2]);
 		 e.rows[2].style.display='none';
 
@@ -278,7 +281,7 @@ add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileNa
 		 let [callee, caller] = functionNameJS(); // logInfo("message !");
 		 console.log(callee+'.input.item',item);
 
-		 let table = document.getElementById('directory_contentid');
+		 let table = document.getElementById('directory_tableid');
 		 let lastrow = table.rows.length-1;
 		 let row = table.rows[lastrow];
 		 let newrow = table.insertRow(-1); // insert in last position;
