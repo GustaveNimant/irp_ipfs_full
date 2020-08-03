@@ -204,14 +204,15 @@ function ipfsRmMFSFileUnless06(mfspath) {
   }
 }
 function ipfsRmMFSFile(mfspath) {
-   url = api_url + 'files/rm?arg='+mfspath
-   return fetch(url,{method:'POST'})
-   .then( resp => {
-      if (resp.ok) { return resp.text(); }
-      else { return resp.json(); }
-   })
-   .catch(logError)
+		url = api_url + 'files/rm?arg='+mfspath+'&force=true';
+		return fetch(url,{method:'POST'})
+				.then( resp => {
+						if (resp.ok) { return resp.text(); }
+						else { return resp.json(); }
+				})
+				.catch(logError)
 }
+
 function ipfsCpMFSFile(target,source) {
    url = api_url + 'files/cp?arg='+source+'&arg='+target;
    return fetch(url,{method:'POST'})
