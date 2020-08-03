@@ -293,3 +293,31 @@ function saveSingleFile() {
 				.catch(err => console.error(err))
 } 
 
+function createDirectory() {
+		let [callee, caller] = functionNameJS();
+		console.log(callee+'.entering');
+		
+		let msfDirPath = document.getElementById('mfs_pathinputid').value;
+		console.log(callee+'.mfsDirPath:',msfDirPath);
+
+		let mfsDirName = document.getElementById('createdirectory_nameid').value;
+		console.log(callee+'.mfsDirName:',mfsDirName);
+		
+		var path_url;
+		if (mfsDirName.match(/^\//)) {
+				path_url = mfsDirName;
+		} else {
+				path_url = msfDirPath + mfsDirName;
+		}
+		console.log(callee+'.path_url:',path_url);
+		
+		var url = api_url + 'files/mkdir?arg=' + path_url + '&parents=true';
+		console.log(callee+'.url:', url);
+
+		return fetch(url, { method: "POST", mode: 'cors'})
+				.then(resp => {console.log(callee+'.resp',resp)})
+				.then( _ => display())
+				.catch(logError)
+
+}
+

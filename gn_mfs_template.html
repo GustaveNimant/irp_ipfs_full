@@ -28,52 +28,53 @@
 </head>
 
 <body>
-
-<div id=inputdivid>
-<h2>Inputs</h2>
-mfs: <input type=text id=mfs_pathinputid placeholder="mfs_path" size=56 value="/">
-<button type=button onclick="action('Clear & Display')">display</button>
-</div>
-<hr>
-<div id=adddivid>
-add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileName(this)"> add under name
-<input type="text" name="filepath" value="" placeholder="mfs file path" id="file_addpathid">
-<button name=add onclick="action('Upload & Display')">OK</button>
-</div>
-<hr>
-<h2>Outputs</h2>
-<div id=directory_divid>
-<table id=directory_tableid border=1>
-    <thead>
-    <tr><th colspan=7><h4 id="directory_pathid" class="whiteOnDarkBlue">directoryPath</h4></th></tr>
-    <tr><th>pin</th><th>type</th><th>name</th><th>hash</th><th>publish</th><th>permanent link</th><th>remove</th></tr>
-    </thead>
-    <tbody>
-    <tr id=dir_row0id class=ls_row">
-				<td class="pin_status">
-						<button class="pin_status_click" name="QmHash" onclick="alert('clicked')">pinStatus</button>
-						<span class="pin_status_span"> through <a href="#" class=pin_status_link>QmHash</a></span>
-				</td>
-				<td class=file_type>fileType</td>
-				<td class=file_name><a class="file_name_click" href=#>fileName</a></td>
-				<td class=file_hash><a class="file_hash_link nodeco" href=#>QmHash</a></td>
-				<td class=file_publish><button class="file_publish_click">Publish</button></td>
-				<!-- urn:ipns:peerid:/mfs_path
-						 urn:ipms:publicname:/mfs_path : need to be register ...  !
-						 urn:nid:/mfs_path w/ nid=hash(urn:ipns:peerid) or nid=hash(urn:dns:example.com)
-						 
-						 nid solely gives access to the (br)index.log (not the folder containing the data)
-						 
-						 nid=hash(urn:ipns:peerid)
-						 idxkey = hash(/mfs_dir/./path/file.txt) 
-						 
-				-->
-				<td class=perma_url><a class="perma_url_link" href="#" title="permanent link">urn:nid:/mfs_path</a></td>
-				<td class=file_remove><button class="file_remove_click">Remove</button></td>
-    </tr>
-    </tbody>
-</table>
-</div>
+		<div id=inputdivid>
+				<h2>Inputs</h2>
+				mfs: <input type=text id=mfs_pathinputid placeholder="mfs_path" size=56 value="/">
+				<button type=button onclick="action('Clear & Display')">display</button><br>
+				Create directory <input type="text" id="createdirectory_nameid">
+				<input type="button" onclick="createDirectory()" value="Create Directory"><br>
+		</div>
+		<hr>
+		<div id=adddivid>
+				add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileName(this)"> add under name
+				<input type="text" name="filepath" value="" placeholder="mfs file path" id="file_addpathid">
+				<button name=add onclick="action('Upload & Display')">OK</button>
+		</div>
+		<hr>
+		<h2>Outputs</h2>
+		<div id=directory_divid>
+				<table id=directory_tableid border=1>
+						<thead>
+								<tr><th colspan=7><h4 id="directory_pathid" class="whiteOnDarkBlue">directoryPath</h4></th></tr>
+								<tr><th>pin</th><th>type</th><th>name</th><th>hash</th><th>publish</th><th>permanent link</th><th>remove</th></tr>
+						</thead>
+						<tbody>
+								<tr id=dir_row0id class=ls_row">
+										<td class="pin_status">
+												<button class="pin_status_click" name="QmHash" onclick="alert('clicked')">pinStatus</button>
+												<span class="pin_status_span"> through <a href="#" class=pin_status_link>QmHash</a></span>
+										</td>
+										<td class=file_type>fileType</td>
+										<td class=file_name><a class="file_name_click" href=#>fileName</a></td>
+										<td class=file_hash><a class="file_hash_link nodeco" href=#>QmHash</a></td>
+										<td class=file_publish><button class="file_publish_click">Publish</button></td>
+										<!-- urn:ipns:peerid:/mfs_path
+												 urn:ipms:publicname:/mfs_path : need to be register ...  !
+												 urn:nid:/mfs_path w/ nid=hash(urn:ipns:peerid) or nid=hash(urn:dns:example.com)
+												 
+												 nid solely gives access to the (br)index.log (not the folder containing the data)
+												 
+												 nid=hash(urn:ipns:peerid)
+												 idxkey = hash(/mfs_dir/./path/file.txt) 
+												 
+										-->
+										<td class=perma_url><a class="perma_url_link" href="#" title="permanent link">urn:nid:/mfs_path</a></td>
+										<td class=file_remove><button class="file_remove_click">Remove</button></td>
+								</tr>
+						</tbody>
+				</table>
+		</div>
 <hr>
 <div id=file_divid>
 		<table id=file_tableid border=1>
