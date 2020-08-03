@@ -45,8 +45,8 @@ add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileNa
 <div id=directory_divid>
 <table id=directory_tableid border=1>
     <thead>
-    <tr><th colspan=6><h4 id="directory_pathid" class="whiteOnDarkBlue">directoryPath</h4></th></tr>
-    <tr><th>pin</th><th>type</th><th>name</th><th>hash</th><th>publish</th><th>permanent link</th></tr>
+    <tr><th colspan=7><h4 id="directory_pathid" class="whiteOnDarkBlue">directoryPath</h4></th></tr>
+    <tr><th>pin</th><th>type</th><th>name</th><th>hash</th><th>publish</th><th>permanent link</th><th>remove</th></tr>
     </thead>
     <tbody>
     <tr id=dir_row0id class=ls_row">
@@ -68,7 +68,8 @@ add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileNa
 						 idxkey = hash(/mfs_dir/./path/file.txt) 
 						 
 				-->
-				<td class=perma_url><a class=perma_url_link href="#" title="permanent link">urn:nid:/mfs_path</a></td>
+				<td class=perma_url><a class="perma_url_link" href="#" title="permanent link">urn:nid:/mfs_path</a></td>
+				<td class=file_remove><button class="file_remove_click">Remove</button></td>
     </tr>
     </tbody>
 </table>
@@ -248,7 +249,7 @@ add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileNa
 				 let type = item.Type;
 				 let size = item.Size;
 
-				 item.DirName = mfs_path;  // FCC DirName is undefined !!!!
+				 item.DirName = mfs_path;  
 				 // FCC should be included in provideItem
 				 item.FullStatus = await getPinStatus(hash);
 
@@ -321,6 +322,13 @@ add: <input type="file"  name="filepath" id="FakePathId" onchange="preFillFileNa
 				 let path = await ipfsPublish(item.Path);
 				 console.log(callee+'.path:',path);
 				 return path
+		 }
+
+		 let file_remove_click = newrow.getElementsByClassName('file_remove_click')[0];
+		 console.log(callee+'.file_remove_click:',file_remove_click);
+		 file_remove_click.onclick = async function() {
+				 await ipfsRmMFSFile(item.Path);
+				 display();
 		 }
 
 		 console.log(callee+'.result.newrow: ',newrow);
