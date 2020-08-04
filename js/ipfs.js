@@ -61,147 +61,147 @@ if (typeof(peerid) == 'undefined') {
 }
 
 function getNid(string) {
-  let [callee, caller] = functionNameJS();
-  console.log(callee+'.input.string:',string)
-  let ns36 = BigInt('0x'+sha256(string)).toString(36).substr(0,13)
-  console.log(callee+'.ns36:',ns36)
-  return ns36
+		let [callee, caller] = functionNameJS();
+		console.log(callee+'.input.string:',string)
+		let ns36 = BigInt('0x'+sha256(string)).toString(36).substr(0,13)
+		console.log(callee+'.ns36:',ns36)
+		return ns36
 }
 
 function shard_n_key(s) {
-  let s2 = sha256(s)
-  return [s2.substr(-4,3),s2.substr(0,18) ];
+		let s2 = sha256(s)
+		return [s2.substr(-4,3),s2.substr(0,18) ];
 
 }
 function shard(s) {
-   return sha256(s).substr(-4,3);
+		return sha256(s).substr(-4,3);
 }
 
 function hashkey(s) {
-   return sha256(s).substr(0,18);
+		return sha256(s).substr(0,18);
 }
 
 function shortqm(qm) {
-   return qm.substr(0,6)+'...'+qm.substr(-3)
+		return qm.substr(0,6)+'...'+qm.substr(-3)
 }
 
 
 
 
 async function ipfsPublish(pubpath) {
-   let [callee, caller] = functionNameJS(); // logInfo("message !")
-   let parent;
-   let pname;
-   let fname;
-   if (pubpath.match('/./')) {
-      [parent,fname] = pubpath.split('/./');
-      pname=parent.substr(parent.lastIndexOf('/')+1)
-      fname = pname+'/'+fname;
-   } else {
-      parent = pubpath;
-      let p = parent.slice(0,-1).lastIndexOf('/')
-      console.log(callee+'.p: ',p);
-      //let grandparent = parent.substring(0,p)
-      pname=parent.substr(p+1)
-      fname = pname;
-   }
+		let [callee, caller] = functionNameJS(); // logInfo("message !")
+		let parent;
+		let pname;
+		let fname;
+		if (pubpath.match('/./')) {
+				[parent,fname] = pubpath.split('/./');
+				pname=parent.substr(parent.lastIndexOf('/')+1)
+				fname = pname+'/'+fname;
+		} else {
+				parent = pubpath;
+				let p = parent.slice(0,-1).lastIndexOf('/')
+				console.log(callee+'.p: ',p);
+				//let grandparent = parent.substring(0,p)
+				pname=parent.substr(p+1)
+				fname = pname;
+		}
 
-   console.log(callee+'.parent: ',parent);
-   console.log(callee+'.pname: ',pname);
-   console.log(callee+'.fname: ',fname);
-   // get hash of parent
-   let hash = await getMFSFileHash(parent);
-   // get wrappper's hash of parent
-   let whash = await getIpfsWrapperHash(pname,hash);
-   let sha2 = sha256(parent);
-   let shard = sha2.substr(-4,3);
-   let key = sha2.substr(0,18); // truncate to 9 bytes
-   console.log(callee+'.parent: ',parent);
-   console.log(callee+'.sha2: ',sha2);
-   console.log(callee+'.key: ',key);
-   //let record = hash+': '+parent;
-   let record = key+': /ipfs/'+whash+'/'+fname
-   console.log(callee+'.record: ',record);
-   let indexlogf = core.dir+'/shards/'+shard+'/'+core.index;
-   let lhash = await ipfsLogAppend(indexlogf,record);
-   console.log(callee+'.lhash:',lhash);
-   let bhash = await getMFSFileHash(core.dir); // get hash of POR
-   console.log(callee+'.bhash:',bhash);
-   // publish under self/peerid
-   let ppath = await ipfsNamePublish('self','/ipfs/'+bhash);
-   ppath += '/'+pname;
-   console.log(callee+'.ppath:',ppath);
-   return ppath;
+		console.log(callee+'.parent: ',parent);
+		console.log(callee+'.pname: ',pname);
+		console.log(callee+'.fname: ',fname);
+		// get hash of parent
+		let hash = await getMFSFileHash(parent);
+		// get wrappper's hash of parent
+		let whash = await getIpfsWrapperHash(pname,hash);
+		let sha2 = sha256(parent);
+		let shard = sha2.substr(-4,3);
+		let key = sha2.substr(0,18); // truncate to 9 bytes
+		console.log(callee+'.parent: ',parent);
+		console.log(callee+'.sha2: ',sha2);
+		console.log(callee+'.key: ',key);
+		//let record = hash+': '+parent;
+		let record = key+': /ipfs/'+whash+'/'+fname
+		console.log(callee+'.record: ',record);
+		let indexlogf = core.dir+'/shards/'+shard+'/'+core.index;
+		let lhash = await ipfsLogAppend(indexlogf,record);
+		console.log(callee+'.lhash:',lhash);
+		let bhash = await getMFSFileHash(core.dir); // get hash of POR
+		console.log(callee+'.bhash:',bhash);
+		// publish under self/peerid
+		let ppath = await ipfsNamePublish('self','/ipfs/'+bhash);
+		ppath += '/'+pname;
+		console.log(callee+'.ppath:',ppath);
+		return ppath;
 
 }
 
 function ipfsNamePublish(k,v) {
     var url = api_url + 'name/publish?key='+k+'&arg='+v+'&allow-offline=true&resolve=false';
     return fetchGetPostJson(url)
-    .then(consLog('ipfsNamePublish'))
-    .then( json => { return json.Value })
-    .catch(logError)
+				.then(consLog('ipfsNamePublish'))
+				.then( json => { return json.Value })
+				.catch(logError)
 }
 
 
 function ipfsAddBinaryFile(file) {
- return readAsBinaryString(file)
- .then( buf => {
-   url = api_url + 'add?file=file.txt&cid-version=0'
-   return fetchPostBinary(url,buf)
-   .then( resp => resp.json() )
-   .then( json => json.Hash ).catch(logError)
- })
- .catch(logError)
+		return readAsBinaryString(file)
+				.then( buf => {
+						url = api_url + 'add?file=file.txt&cid-version=0'
+						return fetchPostBinary(url,buf)
+								.then( resp => resp.json() )
+								.then( json => json.Hash ).catch(logError)
+				})
+				.catch(logError)
 }
 function ipfsAddTextFile(file) {
- return readAsText(file)
- .then( buf => {
-   // curl -X POST -F file=@myfile "http://127.0.0.1:5001/api/v0/add?quiet=0&quieter=0&silent=0&progress=0&trickle=0&only-hash=1
-   //  &wrap-with-directory=0&chunker=size-262144&pin=1&raw-leaves=1
-   //  &nocopy=0&fscache=1&cid-version=0&hash=sha2-256&inline=0&inline-limit=32"
-   url = api_url + 'add?file=file.txt&cid-version=0&only-hash=1'
-   return fetchPostText(url,buf)
-   .then( resp => resp.json() )
-   .then( json => json.Hash ).catch(logError)
- })
- .catch(logError)
+		return readAsText(file)
+				.then( buf => {
+						// curl -X POST -F file=@myfile "http://127.0.0.1:5001/api/v0/add?quiet=0&quieter=0&silent=0&progress=0&trickle=0&only-hash=1
+						//  &wrap-with-directory=0&chunker=size-262144&pin=1&raw-leaves=1
+						//  &nocopy=0&fscache=1&cid-version=0&hash=sha2-256&inline=0&inline-limit=32"
+						url = api_url + 'add?file=file.txt&cid-version=0&only-hash=1'
+						return fetchPostText(url,buf)
+								.then( resp => resp.json() )
+								.then( json => json.Hash ).catch(logError)
+				})
+				.catch(logError)
 }
 
 function getMFSFileContent(path) {
-   let  url = api_url + 'files/read?arg='+path
-   return fetchRespCatch(url)
+		let  url = api_url + 'files/read?arg='+path
+		return fetchRespCatch(url)
 }
 function ipfsGetFileContent(path) {
-   let  url = api_url + 'cat?arg='+path
-   return fetchRespCatch(url)
+		let  url = api_url + 'cat?arg='+path
+		return fetchRespCatch(url)
 }
 
 
 function ipfsGetContentHash(buf) {
- url = api_url + 'add?file=blob.data&cid-version=0&hash-only=1'
- console.log('url: '+url);
- return fetchPostBinary(url,buf)
- .then( resp => resp.json() )
- .then(consLog('ipfsGetContentHash'))
- .then( json => json.Hash )
- .catch(logError)
+		url = api_url + 'add?file=blob.data&cid-version=0&hash-only=1'
+		console.log('url: '+url);
+		return fetchPostBinary(url,buf)
+				.then( resp => resp.json() )
+				.then(consLog('ipfsGetContentHash'))
+				.then( json => json.Hash )
+				.catch(logError)
 
 }
 
 function ipfsRmMFSFileUnless06(mfspath) {
-  if (ipfsversion == '0.6.0') {
-    console.log('info: assumed truncates works !')
-    return Promise.resolve('noop');
-  } else {
-   url = api_url + 'files/rm?arg='+mfspath
-   return fetch(url,{method:'POST'})
-   .then( resp => {
-      if (resp.ok) { return resp.text(); }
-      else { return resp.json(); }
-   })
-   .catch(logError)
-  }
+		if (ipfsversion == '0.6.0') {
+				console.log('info: assumed truncates works !')
+				return Promise.resolve('noop');
+		} else {
+				url = api_url + 'files/rm?arg='+mfspath
+				return fetch(url,{method:'POST'})
+						.then( resp => {
+								if (resp.ok) { return resp.text(); }
+								else { return resp.json(); }
+						})
+						.catch(logError)
+		}
 }
 function ipfsRmMFSFile(mfspath) {
 		url = api_url + 'files/rm?arg='+mfspath+'&force=true';
@@ -214,144 +214,160 @@ function ipfsRmMFSFile(mfspath) {
 }
 
 function ipfsCpMFSFile(target,source) {
-   url = api_url + 'files/cp?arg='+source+'&arg='+target;
-   return fetch(url,{method:'POST'})
-   .then( resp => {
-      console.log('resp: ',resp)
-      if (resp.ok) { return resp.text(); }
-      else { return resp.json(); }
-   })
-   .catch(logError)
+		url = api_url + 'files/cp?arg='+source+'&arg='+target;
+		return fetch(url,{method:'POST'})
+				.then( resp => {
+						console.log('resp: ',resp)
+						if (resp.ok) { return resp.text(); }
+						else { return resp.json(); }
+				})
+				.catch(logError)
 
 }
 
 function ipfsWriteContent(mfspath,buf) {
-// truncate doesn't work for version <= 0.4 !
-// so it does a rm before
-  return createParent(mfspath)
-  .then(ipfsRmMFSFileUnless06(mfspath))
-  .then( _ => {
-    var url = api_url + 'files/write?arg=' + mfspath + '&create=true&truncate=true';
-    return fetchPostBinary(url, buf)
-    .then( _ => getMFSFileHash(mfspath)) 
-    .catch(logError)
-   })
-   .catch(consLog('ipfsWriteContent'))
+		// truncate doesn't work for version <= 0.4 !
+		// so it does a rm before
+		return createParent(mfspath)
+				.then(ipfsRmMFSFileUnless06(mfspath))
+				.then( _ => {
+						var url = api_url + 'files/write?arg=' + mfspath + '&create=true&truncate=true';
+						return fetchPostBinary(url, buf)
+								.then( _ => getMFSFileHash(mfspath)) 
+								.catch(logError)
+				})
+				.catch(consLog('ipfsWriteContent'))
 }
 function ipfsWriteText(mfspath,buf) { // truncate doesn't work for version < 0.5 !
-  return createParent(mfspath)
-  .then(ipfsRmMFSFileUnless06(mfspath))
-  .then( _ => {
-     var url = api_url + 'files/write?arg=' + mfspath + '&create=true&truncate=true';
-    return fetchPostText(url, buf)
-    .then( _ => getMFSFileHash(mfspath)) 
-    .catch(logError)
-  })
-  .catch(consLog('ipfsWriteText'))
+		return createParent(mfspath)
+				.then(ipfsRmMFSFileUnless06(mfspath))
+				.then( _ => {
+						var url = api_url + 'files/write?arg=' + mfspath + '&create=true&truncate=true';
+						return fetchPostText(url, buf)
+								.then( _ => getMFSFileHash(mfspath)) 
+								.catch(logError)
+				})
+				.catch(consLog('ipfsWriteText'))
 }
 
 async function ipfsFileAppend(data,file) { // easy way: read + create !
-  let [callee, caller] = functionNameJS(); // logInfo("message !")
-  let buf = await getMFSFileContent(file)
-  buf += data+"\n"
-  console.log(callee+'.buf:',buf)
-  let status = await ipfsWriteText(file,buf);
-  console.log(callee+'.write.status:',status)
-  let hash = await getMFSFileHash(file)
-  console.log(callee+'.hash: ',hash)
-  return hash
+		let [callee, caller] = functionNameJS(); // logInfo("message !")
+		let buf = await getMFSFileContent(file)
+		buf += data+"\n"
+		console.log(callee+'.buf:',buf)
+		let status = await ipfsWriteText(file,buf);
+		console.log(callee+'.write.status:',status)
+		let hash = await getMFSFileHash(file)
+		console.log(callee+'.hash: ',hash)
+		return hash
 }
 
 async function ipfsShardedFileAppend(data,file) { // easy way: read + create !
-  let [callee, caller] = functionNameJS(); // logInfo("message !")
-  let buf = await getMFSFileContent(file)
-  buf += data+"\n"
-  console.log(callee+'.buf:',buf)
-  let status = await ipfsWriteText(file,buf);
-  console.log(callee+'.write.status:',status)
-  let hash = await getMFSFileHash(file)
-  console.log(callee+'.hash: ',hash)
-  return hash
+		let [callee, caller] = functionNameJS(); // logInfo("message !")
+		let buf = await getMFSFileContent(file)
+		buf += data+"\n"
+		console.log(callee+'.buf:',buf)
+		let status = await ipfsWriteText(file,buf);
+		console.log(callee+'.write.status:',status)
+		let hash = await getMFSFileHash(file)
+		console.log(callee+'.hash: ',hash)
+		return hash
 }
 
 async function getIpfsWrapperHash(name,hash) {
-   let [callee, caller] = functionNameJS(); // logInfo("message !")
-   //name = name.substring(0,name.indexOf('/'));
-   name = name.split('/')[0]
-   console.log(callee+'.name:',name);
-   const empty = 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn';
-   var url = api_url + 'object/patch/add-link?arg='+empty +'&arg=' + name + '&arg=' + hash;
-   let obj = await fetchGetPostJson(url);
-   console.log(callee+'.obj:',obj);
-   let whash = obj.Hash;
-   return whash
+		let [callee, caller] = functionNameJS(); // logInfo("message !")
+		//name = name.substring(0,name.indexOf('/'));
+		name = name.split('/')[0]
+		console.log(callee+'.name:',name);
+		const empty = 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn';
+		var url = api_url + 'object/patch/add-link?arg='+empty +'&arg=' + name + '&arg=' + hash;
+		let obj = await fetchGetPostJson(url);
+		console.log(callee+'.obj:',obj);
+		let whash = obj.Hash;
+		return whash
 }
 
 
 
 function ipfsWriteBinary(mfspath,buf) { // truncate doesn't work for version < 0.5 !
-  return createParent(mfspath)
-  .then(ipfsRmMFSFileUnless06(mfspath))
-  .then( _ => {
-     var url = api_url + 'files/write?arg=' + mfspath + '&create=true&truncate=true';
-    return fetchPostBinary(url, buf)
-    .then( _ => getMFSFileHash(mfspath)) 
-    .catch(logError)
-  })
-  .catch(consLog('ipfsWriteBinary'))
+		return createParent(mfspath)
+				.then(ipfsRmMFSFileUnless06(mfspath))
+				.then( _ => {
+						var url = api_url + 'files/write?arg=' + mfspath + '&create=true&truncate=true';
+						return fetchPostBinary(url, buf)
+								.then( _ => getMFSFileHash(mfspath)) 
+								.catch(logError)
+				})
+				.catch(consLog('ipfsWriteBinary'))
 }
 
 function ipfsWriteJson(mfspath,obj) {
-  return createParent(mfspath)
-  .then(ipfsRmMFSFileUnless06(mfspath))
-  .then( _ => {
-     var url = api_url + 'files/write?arg=' + mfspath + '&create=true&truncate=true';
-    return fetchPostJson(url, obj)
-    .then( _ => getMFSFileHash(mfspath)) 
-    .catch(logError)
-  })
-  .catch(consLog('ipfsWriteJson'))
+		return createParent(mfspath)
+				.then(ipfsRmMFSFileUnless06(mfspath))
+				.then( _ => {
+						var url = api_url + 'files/write?arg=' + mfspath + '&create=true&truncate=true';
+						return fetchPostJson(url, obj)
+								.then( _ => getMFSFileHash(mfspath)) 
+								.catch(logError)
+				})
+				.catch(consLog('ipfsWriteJson'))
 }
+
 function ipfsLogAppend(mfspath,record) {
-  return createParent(mfspath)
-  .then( _ => getMFSFileSize(mfspath))
-  .then( offset => {
-    console.log(mfspath,': offset=',offset);
-    var url = api_url + 'files/write?arg=' + mfspath + '&raw-leave=true&trickle=true&cid-base=base58btc&create=true&truncate=false&offset='+offset;
-    return fetchPostText(url, record+"\n")
-  .then( _ => getMFSFileHash(mfspath)) 
-  })
-  .catch(logError)
+		let [callee, caller] = functionNameJS();
+		console.log(callee+'.input.mfspath',mfspath)
+		console.log(callee+'.input.record',record)
+
+		return createParent(mfspath)
+				.then( _ => getMFSFileSize(mfspath))
+				.then( offset => {
+						console.log(mfspath,': offset=',offset);
+						var url = api_url + 'files/write?arg=' + mfspath + '&raw-leave=true&trickle=true&cid-base=base58btc&create=true&truncate=false&offset='+offset;
+						return fetchPostText(url, record+"\n")
+								.then( _ => getMFSFileHash(mfspath)) 
+				})
+				.catch(logError)
 }
 
 function createParent(path) {
-  console.log('createParent: '+path)
-  let dir = path.replace(new RegExp('/[^/]*$'),'');
-  var url = api_url + 'files/stat?arg=' + dir + '&size=true'
-  return fetch(url, {method:'POST'}).then( resp => resp.json() )
-  .then( json => {
-    if (typeof(json.Code) == 'undefined') {
-      console.log('-d '+dir + '; stat: ', json);
-      return json;
-    } else {
-      // {"Message":"file does not exist","Code":0,"Type":"error"}
-      console.log('! -e '+dir);
-      console.log(json)
-      url = api_url + 'files/mkdir?arg=' + dir + '&parents=true'
-      return fetch(url,{method:'POST'}).then(
-       resp => {
-         console.log('mkdir.resp: ',resp)
-         if (resp.ok) { // if mkdir sucessful, return hash
-           var url = api_url + 'files/stat?arg=' + dir + '&size=true'
-           return fetch(url,{method:'POST'}).then( resp => resp.json() )
-         } else {
-           Promise.reject(new Error(resp.statusText))
-         }
-       })
-      .then ( obj => { console.log('mkdir: ',obj); return obj })
-      .catch(logError)
-    } 
-  })
+		let [callee, caller] = functionNameJS();
+		console.log(callee+'.input.path',path)
+		
+		let dir = path.replace(new RegExp('/[^/]*$'),'');
+		console.log(callee+'.dir',dir);
+
+		var url = api_url + 'files/stat?arg=' + dir + '&size=true'
+		console.log(callee+'.url',url);
+
+		return fetch(url, {method:'POST'})
+				.then( resp => resp.json() )
+				.then( json => {
+						console.log(callee+'.json',json);
+						if (typeof(json.Code) == 'undefined') {
+								return json;
+						} else {
+								// {"Message":"file does not exist","Code":0,"Type":"error"}
+								console.log(callee+'! -e '+dir);
+								url = api_url + 'files/mkdir?arg=' + dir + '&parents=true'
+								console.log(callee+'.url',url);
+								
+								return fetch(url,{method:'POST'})
+										.then(
+												resp => {
+														console.log(callee+'.resp: ',resp)
+														if (resp.ok) { // if mkdir sucessful, return hash
+																var url = api_url + 'files/stat?arg=' + dir + '&size=true'
+																console.log(callee+'.url',url);
+																return fetch(url,{method:'POST'})
+																		.then( resp => resp.json() )
+														} else {
+																Promise.reject(new Error(resp.statusText))
+														}
+												})
+										.then ( obj => { console.log(callee+'.obj',obj); return obj })
+										.catch(logError)
+						} 
+				})
   .catch(consLog('Error:'))
 }
 
