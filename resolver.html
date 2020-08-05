@@ -122,7 +122,8 @@ NID: <span id=nid>:nid</span>
              address = '/ipns/'+peerkey+'/'
 	 } else {
              let [shard,hashkey] = shard_n_key(mut)
-             console.log(callee+'.hashkey:',hashkey);
+             console.log(callee+'.shard:',shard);
+	     console.log(callee+'.hashkey:',hashkey);
              let brurl = '/ipns/'+peerkey+'/shards/'+shard+'/brindex.log'
              console.log(callee+'.brurl:',brurl);
              let index_yaml = await ipfsGetFileContent(brurl);
