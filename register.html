@@ -54,41 +54,41 @@
 
  // detect when peerid is available and feed it to then...
  Promise.resolve(promisedPeerId)
-				.then( peerid => {
-						console.error('peerid:',peerid)
-						let e = document.getElementById('profilepic');
-						e.src = e.src.replace(/:peerid/,peerid)
-						e.alt = peerid
+	.then( peerid => {
+	    console.error('peerid:',peerid)
+	    let e = document.getElementById('profilepic');
+	    e.src = e.src.replace(/:peerid/,peerid)
+	    e.alt = peerid
 
-						let shortid = peerid.substr(0,7);
-						console.log('shortid: ',shortid);
-						replaceInTagsByClassName('shortid',shortid)
-						return peerid
-				})
-				.then( replacePeerIdInForm )
-				.catch(console.error);
+	    let shortid = peerid.substr(0,7);
+	    console.log('shortid: ',shortid);
+	    replaceInTagsByClassName('shortid',shortid)
+	    return peerid
+	})
+	.then( replacePeerIdInForm )
+	.catch(console.error);
 
 
  /*
-		load(window).then( _ => { // on window load ...
-		console.error('peerid:',peerid)
-		});
-	*/
-
-
+    load(window).then( _ => { // on window load ...
+    console.error('peerid:',peerid)
+    });
+  */
 
 
  async function main() {
-		 let yml = await getMFSFileContent(PEERIDSFILE);
-		 //console.log('yml:',yml)
-		 if (typeof(yml.Code) == 'undefined') {
-				 friends = window.jsyaml.safeLoad(yml);
-		 } else {
-				 friends = {};
-		 }
-		 console.log('friends:',friends)
-		 display(friends)
-		 
+     let [callee,caller] = functionNameJS();
+     
+     let yml = await getMFSFileContent(PEERIDSFILE);
+     console.log(callee+'.yml:',yml)
+     if (typeof(yml.Code) == 'undefined') {
+	 friends = window.jsyaml.safeLoad(yml);
+     } else {
+	 friends = {};
+     }
+     console.log(callee+'.friends:',friends)
+     display(friends)
+     
  }
  main()
 
@@ -97,173 +97,172 @@
 
 
  function display(friendsmap) {
-		 let [callee,caller] = functionNameJS();
-		 let table = document.getElementById('friendstableid')
-		 let pos = 1;
-		 clear_table(table,-2);
-		 let last = table.rows.length-1;
-		 let lastrow = table.rows[last];
-		 console.log(callee+'.friendsmap:',friendsmap)
-		 console.log(callee+'.friendsmap.keys:',Object.keys(friendsmap))
-		 for (let i in Object.keys(friendsmap)) {
-				 let key = Object.keys(friendsmap)[i]
-				 console.log(callee+'friendsmap['+key+'].nickname:',friendsmap[key].nickname)
-				 let newrow = table.insertRow(pos); // insert before template-row's position;
-				 let buf = lastrow.innerHTML; // copy previous row content
-				 buf = buf.replace(/:key/g,key)
-				 buf = buf.replace(':idx',i)
-				 let friend = friendsmap[key];
-				 let shortpeerid = shortqm(friend.peerid)
-				 buf = buf.replace(':shortpeerid',shortpeerid)
-				 let shortpeerkey = shortqm(friend.peerkey)
-				 buf = buf.replace(':shortpeerkey',shortpeerkey)
-				 for (name of Object.keys(friend)) {
-						 buf = buf.replace(new RegExp(':'+name,'g'),friend[name]);
-						 if (name == 'trust' && friend.trust == 1 ) { console.log(callee+'.buf.after:',buf) }
-				 }
-				 let nid = getNid('urn:ipns:'+friend.peerkey) // urn = urn:nid:/mfspath
-				 buf = buf.replace(':nid',nid)
+     let [callee,caller] = functionNameJS();
 
-				 newrow.innerHTML = buf;
-				 displayTrust(friend.trust,newrow)
+     let table = document.getElementById('friendstableid')
+     let pos = 1;
+     clear_table(table,-2);
+     let last = table.rows.length-1;
+     let lastrow = table.rows[last];
+     console.log(callee+'.friendsmap:',friendsmap)
+     console.log(callee+'.friendsmap.keys:',Object.keys(friendsmap))
+     
+     for (let i in Object.keys(friendsmap)) {
+	 let key = Object.keys(friendsmap)[i]
+	 console.log(callee+'friendsmap['+key+'].nickname:',friendsmap[key].nickname)
+	 let newrow = table.insertRow(pos); // insert before template-row's position;
+	 let buf = lastrow.innerHTML; // copy previous row content
+	 buf = buf.replace(/:key/g,key)
+	 buf = buf.replace(':idx',i)
+	 let friend = friendsmap[key];
+	 let shortpeerid = shortqm(friend.peerid)
+	 buf = buf.replace(':shortpeerid',shortpeerid)
+	 let shortpeerkey = shortqm(friend.peerkey)
+	 buf = buf.replace(':shortpeerkey',shortpeerkey)
+	 for (name of Object.keys(friend)) {
+	     buf = buf.replace(new RegExp(':'+name,'g'),friend[name]);
+	     if (name == 'trust' && friend.trust == 1 ) { console.log(callee+'.buf.after:',buf) }
+	 }
+	 let nid = getNid('urn:ipns:'+friend.peerkey) // urn = urn:nid:/mfspath
+	 buf = buf.replace(':nid',nid)
 
-		 }
-
+	 newrow.innerHTML = buf;
+	 displayTrust(friend.trust,newrow)
+     }
  }
 
  function displayTrust(value,row) {
-		 let [callee,caller] = functionNameJS();
-		 let sel = row.getElementsByTagName('select')[0]
-		 //let options = sel.getElementsByTagName('option')
-		 let options = sel.options
-		 console.log(callee+'.value:',value)
+     let [callee,caller] = functionNameJS();
 
-		 for (let j = 0; j < options.length; j++) {
+     let sel = row.getElementsByTagName('select')[0]
+     //let options = sel.getElementsByTagName('option')
+     let options = sel.options
+     console.log(callee+'.value:',value)
 
-				 if (options[j].value == value) {    
-						 sel.selectedIndex = j
-						 options[j].selected = true
-						 break;
-				 }
-		 }
-		 console.log(callee+'.sel:',sel)
+     for (let j = 0; j < options.length; j++) {
+
+	 if (options[j].value == value) {    
+	     sel.selectedIndex = j
+	     options[j].selected = true
+	     break;
+	 }
+     }
+     console.log(callee+'.sel:',sel)
 
  }
 
  function get_current_key(el) {
-		 let [callee,caller] = functionNameJS();
-		 console.log(callee+'.input.el:',el)
-		 
-		 let parent = el.parentNode
-		 let grandparent = parent.parentNode
-		 console.log(callee+'.parent:',parent)
-		 console.log(callee+'.grandparent:',grandparent)
-		 let nickname = grandparent.getElementsByClassName('nickname_link')[0].innerHTML;
-		 console.log(callee+'.nickname:',nickname)
-		 let key = grandparent.getElementsByClassName('nickname')[0].id; // used as key
-		 let peerkey = grandparent.getElementsByClassName('peerkey')[0].innerHTML;
-		 console.log(callee+'.key:',key)
-		 console.log(callee+'.peerkey:',peerkey)
-		 return [grandparent,key,nickname,peerkey]
+     let [callee,caller] = functionNameJS();
+     console.log(callee+'.input.el:',el)
+     
+     let parent = el.parentNode
+     let grandparent = parent.parentNode
+     console.log(callee+'.parent:',parent)
+     console.log(callee+'.grandparent:',grandparent)
+     let nickname = grandparent.getElementsByClassName('nickname_link')[0].innerHTML;
+     console.log(callee+'.nickname:',nickname)
+     let key = grandparent.getElementsByClassName('nickname')[0].id; // used as key
+     let peerkey = grandparent.getElementsByClassName('peerkey')[0].innerHTML;
+     console.log(callee+'.key:',key)
+     console.log(callee+'.peerkey:',peerkey)
+     return [grandparent,key,nickname,peerkey]
  }
  
  async function ping(ev) {
-		 let [callee,caller] = functionNameJS();
-		 console.log(callee+'.input.ev:',ev)
-		 
-		 let [grandparent,key,nickname,peerkey] = get_current_key(ev.target);
-		 console.log(callee+'.grandparent:',grandparent)
-		 console.log(callee+'.nickname:',nickname)
-		 console.log(callee+'.peerkey:',peerkey)
-		 console.log(callee+'.key:',key)
-		 let url = api_url + 'ping?arg='+peerkey
-		 //return fetchRespNoCatch(url)
-		 return fetchGetPostText(url)
-				 .then( obj => { console.log(callee+'.obj:',obj) })
+     let [callee,caller] = functionNameJS();
+     console.log(callee+'.input.ev:',ev)
+     
+     let [grandparent,key,nickname,peerkey] = get_current_key(ev.target);
+     console.log(callee+'.grandparent:',grandparent)
+     console.log(callee+'.nickname:',nickname)
+     console.log(callee+'.peerkey:',peerkey)
+     console.log(callee+'.key:',key)
+     let url = api_url + 'ping?arg='+peerkey
+     //return fetchRespNoCatch(url)
+     return fetchGetPostText(url)
+	 .then( obj => { console.log(callee+'.obj:',obj) })
  }
 
  async function remove(ev) {
-		 let [callee,caller] = functionNameJS();
-		 console.log(callee+'.input.ev:',ev)
-		 
-		 let [grandparent,key,nickname,peerkey] = get_current_key(ev.target);
-		 console.log(callee+'.remove.nickname:',nickname)
-		 console.log(callee+'.remove.peerkey:',peerkey)
-		 console.log(callee+'.remove.key:',key)
-		 delete friends[key];
-		 console.log(callee+'.friends:',friends)
-		 let yml = window.jsyaml.safeDump(friends)
-		 let hash = await ipfsWriteContent(PEERIDSFILE,"--- # friends list (yaml)\n"+yml)
-		 console.log(callee+'.yml',yml)
-		 display(friends)
+     let [callee,caller] = functionNameJS();
+     console.log(callee+'.input.ev:',ev)
+     
+     let [grandparent,key,nickname,peerkey] = get_current_key(ev.target);
+     console.log(callee+'.remove.nickname:',nickname)
+     console.log(callee+'.remove.peerkey:',peerkey)
+     console.log(callee+'.remove.key:',key)
+     delete friends[key];
+     console.log(callee+'.friends:',friends)
+     let yml = window.jsyaml.safeDump(friends)
+     let hash = await ipfsWriteContent(PEERIDSFILE,"--- # friends list (yaml)\n"+yml)
+     console.log(callee+'.yml',yml)
+     display(friends)
  }
  
 
  async function updateTrust(ev) {
-		 let [callee,caller] = functionNameJS();
-		 console.log(callee+'.input.ev:',ev)
-		 
-		 let [grandparent,key,nickname,peerkey] = get_current_key(ev.target);
-		 
-		 console.log(callee+'.nickname:',nickname)
-		 console.log(callee+'.key:',key)
-		 console.log(callee+'.peerkey:',peerkey)
+     let [callee,caller] = functionNameJS();
+     console.log(callee+'.input.ev:',ev)
+     
+     let [grandparent,key,nickname,peerkey] = get_current_key(ev.target);
+     
+     console.log(callee+'.nickname:',nickname)
+     console.log(callee+'.key:',key)
+     console.log(callee+'.peerkey:',peerkey)
 
-		 console.log(callee+'.record.before:',JSON.stringify(friends[key]))
-		 console.log(callee+'.record.trust.before:',friends[key].trust)
-		 friends[key]['trust'] = ev.target.value
-		 console.log(callee+'.record.trust.after:',friends[key].trust)
-		 
-		 let yml = window.jsyaml.safeDump(friends)
-		 let hash = await ipfsWriteContent(PEERIDSFILE,"--- # friends list (yaml)\n"+yml)
-		 
+     console.log(callee+'.record.before:',JSON.stringify(friends[key]))
+     console.log(callee+'.record.trust.before:',friends[key].trust)
+     friends[key]['trust'] = ev.target.value
+     console.log(callee+'.record.trust.after:',friends[key].trust)
+     
+     let yml = window.jsyaml.safeDump(friends)
+     let hash = await ipfsWriteContent(PEERIDSFILE,"--- # friends list (yaml)\n"+yml)
+     
  }
 
  async function addFriend(ev) {
-		 console.log('ev:',ev)
-		 let form = ev.target.parentNode;
-		 console.log('form:',form)
-		 let query = getQuery(form);
-		 let json = query2json(query)
-		 console.log('json:',json)
-		 json.nickname = json.nickname.replace(/\s+$/,'')
-		 json.nickname = json.nickname.replace(/\s+/g,'-')
-		 let key = getNid('urn:ipns:'+json.peerkey)
-
-
-
-		 friends[key] = json; // merge w/ existing friends list
-		 console.log('friends:',friends)
-		 let yml = window.jsyaml.safeDump(friends)
-		 console.log('yml:',yml)
-		 let hash = await ipfsWriteContent(PEERIDSFILE,"--- # friends list (yaml)\n"+yml)
-		 display(friends)
-		 
+     console.log('ev:',ev)
+     let form = ev.target.parentNode;
+     console.log('form:',form)
+     let query = getQuery(form);
+     let json = query2json(query)
+     console.log('json:',json)
+     json.nickname = json.nickname.replace(/\s+$/,'')
+     json.nickname = json.nickname.replace(/\s+/g,'-')
+     let key = getNid('urn:ipns:'+json.peerkey)
+     
+     friends[key] = json; // merge w/ existing friends list
+     console.log('friends:',friends)
+     let yml = window.jsyaml.safeDump(friends)
+     console.log('yml:',yml)
+     let hash = await ipfsWriteContent(PEERIDSFILE,"--- # friends list (yaml)\n"+yml)
+     display(friends)
+     
  }
-
+ 
  function clear_table(t,pos) {
-		 console.log('t:',t)
-		 let p = t.rows.length+pos+1
-		 t.rows[p].style.display=''; 
-		 //t.rows[p].style.display='none'; 
-		 for (i = p-1; i > 0; i--) {
-				 t.deleteRow(i)
-		 }
-		 console.log('nrow after delete:',t.rows.length)
+     console.log('t:',t)
+     let p = t.rows.length+pos+1
+     t.rows[p].style.display=''; 
+     //t.rows[p].style.display='none'; 
+     for (i = p-1; i > 0; i--) {
+	 t.deleteRow(i)
+     }
+     console.log('nrow after delete:',t.rows.length)
  }
 
  function replacePeerIdInForm(id) { 
-		 let forms = document.getElementsByTagName('form');
-		 console.log('forms: ',forms);
-		 if (forms.length > 0) {
-				 let e = forms[0].elements['peerid'];
-				 console.log('peerid: '+id)
-				 if (typeof(e) != 'undefined') {
-						 console.log(e.outerHTML)
-						 e.value = e.value.replace(new RegExp(':peerid','g'),id)
-				 }
-		 }
-		 return id
+     let forms = document.getElementsByTagName('form');
+     console.log('forms: ',forms);
+     if (forms.length > 0) {
+	 let e = forms[0].elements['peerid'];
+	 console.log('peerid: '+id)
+	 if (typeof(e) != 'undefined') {
+	     console.log(e.outerHTML)
+	     e.value = e.value.replace(new RegExp(':peerid','g'),id)
+	 }
+     }
+     return id
  }
 
 </script>
