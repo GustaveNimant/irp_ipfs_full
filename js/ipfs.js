@@ -169,24 +169,38 @@ function ipfsAddTextFile(file) {
 }
 
 function getMFSFileContent(path) {
-		let  url = api_url + 'files/read?arg='+path
-		return fetchRespCatch(url)
+    let [callee, caller] = functionNameJS();
+    console.log(callee+'.path: '+path);
+
+    let  url = api_url + 'files/read?arg='+path
+    console.log(callee+'.url: '+url);
+    
+    return fetchRespCatch(url)
 }
 function ipfsGetFileContent(path) {
-		let  url = api_url + 'cat?arg='+path
-		return fetchRespCatch(url)
+    let [callee, caller] = functionNameJS();
+    console.log(callee+'.path: '+path);
+    
+    let  url = api_url + 'cat?arg='+path
+    console.log(callee+'.url: '+url);
+    
+    return fetchRespCatch(url)
 }
 
 
 function ipfsGetContentHash(buf) {
-		url = api_url + 'add?file=blob.data&cid-version=0&hash-only=1'
-		console.log('url: '+url);
-		return fetchPostBinary(url,buf)
-				.then( resp => resp.json() )
-				.then(consLog('ipfsGetContentHash'))
-				.then( json => json.Hash )
-				.catch(logError)
+    let [callee, caller] = functionNameJS();
+    console.log(callee+'.input.buf:',buf);
 
+    url = api_url + 'add?file=blob.data&cid-version=0&hash-only=1'
+    console.log(callee+'.url:',url);
+
+    return fetchPostBinary(url,buf)
+	.then( resp => resp.json() )
+	.then(consLog('ipfsGetContentHash'))
+	.then( json => json.Hash )
+	.catch(logError)
+    
 }
 
 function ipfsRmMFSFileUnless06(mfspath) {

@@ -126,6 +126,7 @@ NID: <span id=nid>:nid</span>
 	     console.log(callee+'.hashkey:',hashkey);
              let brurl = '/ipns/'+peerkey+'/shards/'+shard+'/brindex.log'
              console.log(callee+'.brurl:',brurl);
+	     
              let index_yaml = await ipfsGetFileContent(brurl);
              if (typeof(index_yaml.Code) != 'undefined') {
 		 console.error(callee+'.index_yaml:',index_yaml);
