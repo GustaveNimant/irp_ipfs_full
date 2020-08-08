@@ -78,14 +78,14 @@
 	<hr>
 	<div id=file_divid>
 	    <table id=file_tableid border=1>
-		<tr><th colspan=2><h4 id="file_pathid" class="whiteOnDarkBlue">filepath</h4></th>
-		    <tr><th>pin</th><th>hash</th>
-			<tr id=file_row0id class=file_row_class>
-			    <td class="pin_cell_status" name="mHash">unpinned</td>
-			    <td class="file_cell_hash"><a class=file_hash_link href=#>Qm12345</a></td>
-			</tr>
-		    </tr>
+		<tr><th colspan=2><h4 id="file_pathid" class="whiteOnDarkBlue">filepath</h4></th></tr>
+		<tr><th>pin</th><th>hash</th></tr>
+		
+		<tr id=file_row0id class=file_row_class>
+		    <td class="pin_cell_status" name="mHash">unpinned</td>
+		    <td class="file_cell_hash"><a class=file_hash_link href=#>Qm12345</a></td>
 		</tr>
+		
 	    </table>
 	    content:<br><textarea id=file_textareaid>file's content</textarea>
 	    <br>
@@ -227,7 +227,7 @@
 	 }
 	 console.log(callee+'.mfs_path:',mfs_path);
 
-	 let table = await fetch_directory_content(mfs_path);
+	 let table = await fetchDirectoryContent(mfs_path);
 
 	 let table_of_content = table.TOC
 	 console.log(callee+'.table_of_content:',table_of_content);
@@ -301,7 +301,7 @@
 	 let file_name_click = newrow.getElementsByClassName('file_name_click')[0];
 	 console.log(callee+'.file_name_click:',file_name_click);
 
-	 // FCC Bug fixed here
+	 // FCC IRP fixed here
 	 file_name_click.onclick = function() {
 	     document.getElementById('mfs_pathinputid').value = item.Path // FCC
 	     stored['curItem'] = null // FCC provideItem is not used properly
@@ -315,11 +315,12 @@
 	 file_hash_link.href = 'http://localhost:8080/ipfs/'+item.Hash;
 	 file_hash_link.innerHTML = item.Hash;
 
+	 // publish
 	 let file_publish_click = newrow.getElementsByClassName('file_publish_click')[0];
 	 console.log(callee+'.file_publish_click:',file_publish_click);
 	 file_publish_click.onclick = async function () {
 	     publishHistory(item); // FCC return not used
-	     let urn = update_perma_url_link(item); // FCC ??? urn
+	     update_perma_url_link(item);
 	     let path = await ipfsPublish(item.Path);
 	     console.log(callee+'.path:',path);
 	     return path
@@ -343,15 +344,17 @@
 	 let row = document.getElementById(item.Hash);
 	 console.log(callee+'.row:',row);
 	 let perma_url_link = row.getElementsByClassName('perma_url_link')[0];
-
-	 console.log(callee+'.perma_url_link.href:',perma_url_link.href);
+	 console.log(callee+'.perma_url_link1:',perma_url_link);
+	 console.log(callee+'.perma_url_link1.href:',perma_url_link.href);
 	 let ns36 = getNid('urn:ipns:'+peerid)
 	 let urn = 'urn:' + ns36  + ':' + item.Path
+	 console.log(callee+'.urn:',urn);
 	 const qmresolver = 'QmThhn7niLeuEfCMXhS1SmYgNFobokPxsobveN7RXVeUpk'
 	 // perma_url_link.href= 'http://resolver.localhost:8080/ipfs/'+qmresolver+'/#'+urn
 	 perma_url_link.href= './resolver.html#'+urn
 	 perma_url_link.innerHTML= urn
-	 console.log(callee+'.perma_url_link:',perma_url_link);
+	 console.log(callee+'.perma_url_link2:',perma_url_link);
+	 console.log(callee+'.perma_url_link2.href:',perma_url_link.href);
 	 return urn
      }
 
