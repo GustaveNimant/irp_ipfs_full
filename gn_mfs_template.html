@@ -292,24 +292,26 @@
 	 newrow.setAttribute('id', item.Hash) // use for togglepin's row-identification
 	 console.log(callee+'.newrow:',newrow);
 
+	 // pin
 	 display_pin(item, newrow);
 
+	 // type
 	 let file_type = newrow.getElementsByClassName('file_type')[0];
 	 file_type.innerHTML = item.Type; // typenames[item.Type];
 	 console.log(callee+'.file_type:',file_type);
 
+	 // name
 	 let file_name_click = newrow.getElementsByClassName('file_name_click')[0];
 	 console.log(callee+'.file_name_click:',file_name_click);
 
-	 // FCC IRP fixed here
 	 file_name_click.onclick = function() {
-	     document.getElementById('mfs_pathinputid').value = item.Path // FCC
-	     stored['curItem'] = null // FCC provideItem is not used properly
-	     // stored['curItem'] = item // FCC provideItem is not used properly
+	     document.getElementById('mfs_pathinputid').value = item.Path // reset data
+	     stored['curItem'] = null // Prepare provideItem 
              display();
 	 }
 	 file_name_click.innerHTML = item.Name;
 
+	 // hash
 	 let file_hash_link=newrow.getElementsByClassName('file_hash_link')[0];
 	 console.log(callee+'.file_hash_link',file_hash_link);
 	 file_hash_link.href = 'http://localhost:8080/ipfs/'+item.Hash;
@@ -326,6 +328,7 @@
 	     return path
 	 }
 
+	 // remove
 	 let file_remove_click = newrow.getElementsByClassName('file_remove_click')[0];
 	 console.log(callee+'.file_remove_click:',file_remove_click);
 	 file_remove_click.onclick = async function() {
