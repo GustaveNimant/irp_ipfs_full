@@ -217,12 +217,14 @@
  }
 
  async function addFriend(ev) {
-     console.log('ev:',ev)
+     let [callee,caller] = functionNameJS();
+     console.log(callee+'.input.ev:',ev)
+     
      let form = ev.target.parentNode;
-     console.log('form:',form)
+     console.log(callee+'.form:',form)
      let query = getQuery(form);
      let json = query2json(query)
-     console.log('json:',json)
+     console.log(callee+'.json:',json)
      json.nickname = json.nickname.replace(/\s+$/,'')
      json.nickname = json.nickname.replace(/\s+/g,'-')
      let key = getNid('urn:ipns:'+json.peerkey)
@@ -230,21 +232,25 @@
      FRIENDS[key] = json; // merge w/ existing friends list
      console.log('FRIENDS:',FRIENDS)
      let yml = window.jsyaml.safeDump(FRIENDS)
-     console.log('yml:',yml)
+     console.log(callee+'.yml:',yml)
      let hash = await ipfsWriteContent(PEERIDSFILE,"--- # friends list (yaml)\n"+yml)
+
      display(FRIENDS)
-     
  }
  
- function clear_table(t,pos) {
-     console.log('t:',t)
-     let p = t.rows.length+pos+1
-     t.rows[p].style.display=''; 
-     //t.rows[p].style.display='none'; 
-     for (i = p-1; i > 0; i--) {
-	 t.deleteRow(i)
+ function clear_table(tab,pos) {
+     let [callee,caller] = functionNameJS();
+     console.log(callee+'.input.tab:',tab)
+     console.log(callee+'.input.pos:',pos)
+     
+     let template_row_index = tab.rows.length+pos+1
+     console.log(callee+'.template_row_index:',template_row_index)
+     //tab.rows[template_row_index].style.display=''; // display template-row
+     tab.rows[template_row_index].style.display='none'; // hide template-row
+     for (i = template_row_index-1; i > 0; i--) {
+	 tab.deleteRow(i)
      }
-     console.log('nrow after delete:',t.rows.length)
+     console.log('nb of rows after delete:',tab.rows.length)
  }
 
  function replacePeerIdInForm(id) { 
