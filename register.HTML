@@ -22,26 +22,23 @@
 
 <div id=output>
 <h3>friends list</h3>
-<table id=friends_tableid>
-    <tr>
-	<th>#</th><th>pic.</th><th>nickname</th><th>peerkey</th><th>fullname</th><th>from</th><th>trust</th>
-	<th>nid</th><th>obs.</th><th>ping</th><th>remove</th>
-    </tr>
-    <tr><td>:idx</td>
-	<td><img class=thumbnail alt=":key" src=https://api.adorable.io/avatar/18/:peerkey.png></td>
-	<td class=nickname id=":key"><a class="nickname_link nodeco" href=resolver.html#urn::key:/my/identity/./public.yml>:nickname</a></td>
-	<td class=peerkey>:peerkey</td>
-	<td><a class="fullname_link nodeco" href="http://localhost:8080/ipns/:peerkey" name=":peerkey" title=":shortpeerkey">:fullname</a></td>
-	<td><a href=http://localhost:8080/ipns/:peerid title=:peerid>:shortpeerid</a></td>
-	<td><select name=trust value=":trust" onchange="updateTrust(event)">
-	    <option value=0>untrusted</option>
-	    <option value=1>trusted</option>
-	</select></td>
-	<td>:nid</td>
-	<td>:obs</td>
-	<td><button class=ping_button onclick="ping(event)">ping</button></td>
-	<td><button class=remove_button onclick="remove(event)">remove</button></td>
-    </tr>
+<table id=friendstableid>
+<tr><th>#</th><th>pic.</th><th>nickname</th><th>peerkey</th><th>fullname</th><th>from</th><th>trust</th>
+<th>nid</th><th>obs.</th><th>ping</th><th>remove</th>
+<tr><td>:idx</td>
+<td><img class=thumbnail alt=":key" src=https://api.adorable.io/avatar/18/:peerkey.png></td>
+<td class=nickname id=":key"><a class="nickname_link nodeco" href=resolver.html#urn::key:/my/identity/./public.yml>:nickname</a></td>
+<td class=peerkey>:peerkey</td>
+<td><a class="fullname_link nodeco" href="http://localhost:8080/ipns/:peerkey" name=":peerkey" title=":shortpeerkey">:fullname</a></td>
+<td><a href=http://localhost:8080/ipns/:peerid title=:peerid>:shortpeerid</td>
+<td><select name=trust value=":trust" onchange="updateTrust(event)">
+    <option value=0>untrusted</option>
+    <option value=1>trusted</option>
+    </select></td>
+<td>:nid</td>
+<td>:obs</td>
+<td><button class=ping_button onclick="ping(event)">ping</button></td>
+<td><button class=remove_button onclick="remove(event)">remove</button></td>
 </table>
 </div>
 
@@ -98,30 +95,26 @@
  let tic = getTic()
  console.log('tic:',tic)
 
- function display(friends_map) {
+
+ function display(friendsmap) {
      let [callee,caller] = functionNameJS();
 
-     let friends_table = document.getElementById('friends_tableid')
-     console.log(callee+'.friends_table:',friends_table)
-
+     let table = document.getElementById('friendstableid')
      let pos = 1;
-     clear_friends_table(friends_table,-2);
-     console.log(callee+'.after clear.friends_table:',friends_table)
+     clear_table(table,-2);
+     let last = table.rows.length-1;
+     let lastrow = table.rows[last];
+     console.log(callee+'.friendsmap:',friendsmap)
+     console.log(callee+'.friendsmap.keys:',Object.keys(friendsmap))
      
-     let last = friends_table.rows.length-1;
-     let lastrow = friends_table.rows[last];
-     console.log(callee+'.friends_map:',friends_map)
-     console.log(callee+'.friends_map.keys:',Object.keys(friends_map))
-     
-     for (let i in Object.keys(friends_map)) {
-	 console.log(callee+'.loop.i:',i)
-	 let key = Object.keys(friends_map)[i]
-	 console.log(callee+'friends_map['+key+'].nickname:',friends_map[key].nickname)
-	 let newrow = friends_table.insertRow(pos); // insert before template-row's position;
+     for (let i in Object.keys(friendsmap)) {
+	 let key = Object.keys(friendsmap)[i]
+	 console.log(callee+'friendsmap['+key+'].nickname:',friendsmap[key].nickname)
+	 let newrow = table.insertRow(pos); // insert before template-row's position;
 	 let buf = lastrow.innerHTML; // copy previous row content
 	 buf = buf.replace(/:key/g,key)
 	 buf = buf.replace(':idx',i)
-	 let friend = friends_map[key];
+	 let friend = friendsmap[key];
 	 let shortpeerid = shortqm(friend.peerid)
 	 buf = buf.replace(':shortpeerid',shortpeerid)
 	 let shortpeerkey = shortqm(friend.peerkey)
@@ -205,6 +198,7 @@
      console.log(callee+'.yml',yml)
      display(friends)
  }
+ 
 
  async function updateTrust(ev) {
      let [callee,caller] = functionNameJS();
@@ -227,52 +221,44 @@
  }
 
  async function addFriend(ev) {
-     let [callee,caller] = functionNameJS();
-     console.log(callee+'.input.ev:',ev)
-     
+     console.log('ev:',ev)
      let form = ev.target.parentNode;
-     console.log(callee+'.form:',form)
+     console.log('form:',form)
      let query = getQuery(form);
      let json = query2json(query)
-     console.log(callee+'.json:',json)
+     console.log('json:',json)
      json.nickname = json.nickname.replace(/\s+$/,'')
      json.nickname = json.nickname.replace(/\s+/g,'-')
      let key = getNid('urn:ipns:'+json.peerkey)
      
      friends[key] = json; // merge w/ existing friends list
-     console.log(callee+'.friends:',friends)
+     console.log('friends:',friends)
      let yml = window.jsyaml.safeDump(friends)
-     console.log(callee+'.yml:',yml)
+     console.log('yml:',yml)
      let hash = await ipfsWriteContent(PEERIDSFILE,"--- # friends list (yaml)\n"+yml)
      display(friends)
      
  }
  
- function clear_friends_table(tab,pos) {
-     let [callee,caller] = functionNameJS();
-     console.log(callee+'.input.tab:',tab)
-     console.log(callee+'.input.pos:',pos)
-
-     let p = tab.rows.length+pos+1
-     tab.rows[p].style.display=''; 
+ function clear_table(t,pos) {
+     console.log('t:',t)
+     let p = t.rows.length+pos+1
+     t.rows[p].style.display=''; 
      //t.rows[p].style.display='none'; 
      for (i = p-1; i > 0; i--) {
-	 tab.deleteRow(i)
+	 t.deleteRow(i)
      }
-     console.log(callee+'.nrow after delete:',tab.rows.length)
+     console.log('nrow after delete:',t.rows.length)
  }
 
- function replacePeerIdInForm(id) {
-     let [callee,caller] = functionNameJS();
-     console.log(callee+'.input.id:',id)
-     
+ function replacePeerIdInForm(id) { 
      let forms = document.getElementsByTagName('form');
-     console.log(callee+'.forms:',forms);
+     console.log('forms: ',forms);
      if (forms.length > 0) {
 	 let e = forms[0].elements['peerid'];
-	 console.log(callee+'.peerid:'+id)
+	 console.log('peerid: '+id)
 	 if (typeof(e) != 'undefined') {
-	     console.log(callee+'.e.outerHTML',e.outerHTML)
+	     console.log(e.outerHTML)
 	     e.value = e.value.replace(new RegExp(':peerid','g'),id)
 	 }
      }
