@@ -94,7 +94,7 @@
  let tic = getTic()
  console.log('tic:',tic)
 
- function display(friendsmap) {
+ function display(friends_map) {
      let [callee,caller] = functionNameJS();
 
      let table = document.getElementById('friendstableid')
@@ -102,17 +102,17 @@
      clear_table(table,-2);
      let last = table.rows.length-1;
      let lastrow = table.rows[last];
-     console.log(callee+'.friendsmap:',friendsmap)
-     console.log(callee+'.friendsmap.keys:',Object.keys(friendsmap))
+     console.log(callee+'.friends_map:',friends_map)
+     console.log(callee+'.friends_map.keys:',Object.keys(friends_map))
      
-     for (let i in Object.keys(friendsmap)) {
-	 let key = Object.keys(friendsmap)[i]
-	 console.log(callee+'friendsmap['+key+'].nickname:',friendsmap[key].nickname)
+     for (let i in Object.keys(friends_map)) {
+	 let key = Object.keys(friends_map)[i]
+	 console.log(callee+'friends_map['+key+'].nickname:',friends_map[key].nickname)
 	 let newrow = table.insertRow(pos); // insert before template-row's position;
 	 let buf = lastrow.innerHTML; // copy previous row content
 	 buf = buf.replace(/:key/g,key)
 	 buf = buf.replace(':idx',i)
-	 let friend = friendsmap[key];
+	 let friend = friends_map[key];
 	 let shortpeerid = shortqm(friend.peerid)
 	 buf = buf.replace(':shortpeerid',shortpeerid)
 	 let shortpeerkey = shortqm(friend.peerkey)
@@ -131,11 +131,12 @@
 
  function displayTrust(value,row) {
      let [callee,caller] = functionNameJS();
-
+     console.log(callee+'.input.value:',value)
+     console.log(callee+'.input.row:',row)
+     
      let sel = row.getElementsByTagName('select')[0]
      //let options = sel.getElementsByTagName('option')
      let options = sel.options
-     console.log(callee+'.value:',value)
 
      for (let j = 0; j < options.length; j++) {
 
@@ -253,18 +254,22 @@
      console.log('nb of rows after delete:',tab.rows.length)
  }
 
- function replacePeerIdInForm(id) { 
+ function replacePeerIdInForm(peerid) { 
+     let [callee,caller] = functionNameJS();
+     console.log(callee+'.input.peerid:',peerid)
+
      let forms = document.getElementsByTagName('form');
-     console.log('forms: ',forms);
+     console.log(callee+'.forms:',forms);
      if (forms.length > 0) {
-	 let e = forms[0].elements['peerid'];
-	 console.log('peerid: '+id)
-	 if (typeof(e) != 'undefined') {
-	     console.log(e.outerHTML)
-	     e.value = e.value.replace(new RegExp(':peerid','g'),id)
+	 let ele = forms[0].elements['peerid'];
+	 console.log(callee+'.ele:',ele)
+	 if (typeof(ele) != 'undefined') {
+	     console.log(callee+'.before.ele.value',ele.value)
+	     ele.value = ele.value.replace(new RegExp(':peerid','g'),peerid)
+	     console.log(callee+'.after.ele.value',ele.value)
 	 }
      }
-     return id
+     return peerid
  }
 
 </script>

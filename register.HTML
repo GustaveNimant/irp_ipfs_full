@@ -4,41 +4,41 @@
 <link href=style.css rel=stylesheet>
 <h3>Add a friend form</h3>
 <form>
-<img id=profilepic alt=":peerid" src=https://api.adorable.io/avatar/256/:peerid.png></td>
-<b><span id=self>my</span> friends (<span class=shortid>:shortid</span>):</b>
-<br><input type=text name=nickname value="michelc" placeholder="nickname">
-<br><input type=text name=fullname value="Michel Combes" placeholder="fullname">
-<select name=trust><option value=1>trusted</option><option value=0 selected>untrusted</option></select>
-<br><input type=text name=city value="" placeholder="city">
-<br><input type=text name=peerkey size=48 value="QmcfHufAK9ErQ9ZKJF7YX68KntYYBJngkGDoVKcZEJyRve" placeholder="peerkey">
-<br><input type=text name=obs value="" placeholder="observation">
-<br><input type=text name=phone value="" placeholder="phone number">
-<br><input type=text name=email value="" placeholder="email">
-<br><input type=text name=last4 value="" placeholder="last 4 digits of physical ID">
-<br><input type=text name=peerid size=48 value=":peerid" placeholder="peerid" disabled>
-<br><button type=button onclick="addFriend(event)">add</button>
+    <img id=profilepic alt=":peerid" src=https://api.adorable.io/avatar/256/:peerid.png></td>
+    <b><span id=self>my</span> friends (<span class=shortid>:shortid</span>):</b>
+    <br><input type=text name=nickname value="michelc" placeholder="nickname">
+    <br><input type=text name=fullname value="Michel Combes" placeholder="fullname">
+    <select name=trust><option value=1>trusted</option><option value=0 selected>untrusted</option></select>
+    <br><input type=text name=city value="" placeholder="city">
+    <br><input type=text name=peerkey size=48 value="QmcfHufAK9ErQ9ZKJF7YX68KntYYBJngkGDoVKcZEJyRve" placeholder="peerkey">
+    <br><input type=text name=obs value="" placeholder="observation">
+    <br><input type=text name=phone value="" placeholder="phone number">
+    <br><input type=text name=email value="" placeholder="email">
+    <br><input type=text name=last4 value="" placeholder="last 4 digits of physical ID">
+    <br><input type=text name=peerid size=48 value=":peerid" placeholder="peerid" disabled>
+    <br><button type=button onclick="addFriend(event)">add</button>
 </form>
 <br>
 
 <div id=output>
 <h3>friends list</h3>
 <table id=friendstableid>
-<tr><th>#</th><th>pic.</th><th>nickname</th><th>peerkey</th><th>fullname</th><th>from</th><th>trust</th>
-<th>nid</th><th>obs.</th><th>ping</th><th>remove</th>
-<tr><td>:idx</td>
-<td><img class=thumbnail alt=":key" src=https://api.adorable.io/avatar/18/:peerkey.png></td>
-<td class=nickname id=":key"><a class="nickname_link nodeco" href=resolver.html#urn::key:/my/identity/./public.yml>:nickname</a></td>
-<td class=peerkey>:peerkey</td>
-<td><a class="fullname_link nodeco" href="http://localhost:8080/ipns/:peerkey" name=":peerkey" title=":shortpeerkey">:fullname</a></td>
-<td><a href=http://localhost:8080/ipns/:peerid title=:peerid>:shortpeerid</td>
-<td><select name=trust value=":trust" onchange="updateTrust(event)">
-    <option value=0>untrusted</option>
-    <option value=1>trusted</option>
-    </select></td>
-<td>:nid</td>
-<td>:obs</td>
-<td><button class=ping_button onclick="ping(event)">ping</button></td>
-<td><button class=remove_button onclick="remove(event)">remove</button></td>
+    <tr><th>#</th><th>pic.</th><th>nickname</th><th>peerkey</th><th>fullname</th><th>from</th><th>trust</th>
+	<th>nid</th><th>obs.</th><th>ping</th><th>remove</th>
+	<tr><td>:idx</td>
+	    <td><img class=thumbnail alt=":key" src=https://api.adorable.io/avatar/18/:peerkey.png></td>
+	    <td class=nickname id=":key"><a class="nickname_link nodeco" href=resolver.html#urn::key:/my/identity/./public.yml>:nickname</a></td>
+	    <td class=peerkey>:peerkey</td>
+	    <td><a class="fullname_link nodeco" href="http://localhost:8080/ipns/:peerkey" name=":peerkey" title=":shortpeerkey">:fullname</a></td>
+	    <td><a href=http://localhost:8080/ipns/:peerid title=:peerid>:shortpeerid</a></td>
+	    <td><select name=trust value=":trust" onchange="updateTrust(event)">
+		<option value=0>untrusted</option>
+		<option value=1>trusted</option>
+	    </select></td>
+	    <td>:nid</td>
+	    <td>:obs</td>
+	    <td><button class=ping_button onclick="ping(event)">ping</button></td>
+	    <td><button class=remove_button onclick="remove(event)">remove</button></td>
 </table>
 </div>
 
@@ -50,7 +50,7 @@
 <script type=text/javascript>
  const PEERIDSFILE = '/my/friends/peerids.yml';
  console.log('PEERIDSFILE:',PEERIDSFILE)
- let friends = {}
+ let FRIENDS = {}
 
  // detect when peerid is available and feed it to then...
  Promise.resolve(promisedPeerId)
@@ -68,13 +68,11 @@
 	.then( replacePeerIdInForm )
 	.catch(console.error);
 
-
  /*
     load(window).then( _ => { // on window load ...
     console.error('peerid:',peerid)
     });
   */
-
 
  async function main() {
      let [callee,caller] = functionNameJS();
@@ -82,19 +80,19 @@
      let yml = await getMFSFileContent(PEERIDSFILE);
      console.log(callee+'.yml:',yml)
      if (typeof(yml.Code) == 'undefined') {
-	 friends = window.jsyaml.safeLoad(yml);
+	 FRIENDS = window.jsyaml.safeLoad(yml);
      } else {
-	 friends = {};
+	 FRIENDS = {};
      }
-     console.log(callee+'.friends:',friends)
-     display(friends)
+     console.log(callee+'.FRIENDS:',FRIENDS)
+     display(FRIENDS)
      
  }
+
  main()
 
  let tic = getTic()
  console.log('tic:',tic)
-
 
  function display(friendsmap) {
      let [callee,caller] = functionNameJS();
@@ -133,11 +131,12 @@
 
  function displayTrust(value,row) {
      let [callee,caller] = functionNameJS();
-
+     console.log(callee+'.input.value:',value)
+     console.log(callee+'.input.row:',row)
+     
      let sel = row.getElementsByTagName('select')[0]
      //let options = sel.getElementsByTagName('option')
      let options = sel.options
-     console.log(callee+'.value:',value)
 
      for (let j = 0; j < options.length; j++) {
 
@@ -191,14 +190,13 @@
      console.log(callee+'.remove.nickname:',nickname)
      console.log(callee+'.remove.peerkey:',peerkey)
      console.log(callee+'.remove.key:',key)
-     delete friends[key];
-     console.log(callee+'.friends:',friends)
-     let yml = window.jsyaml.safeDump(friends)
+     delete FRIENDS[key];
+     console.log(callee+'.FRIENDS:',FRIENDS)
+     let yml = window.jsyaml.safeDump(FRIENDS)
      let hash = await ipfsWriteContent(PEERIDSFILE,"--- # friends list (yaml)\n"+yml)
      console.log(callee+'.yml',yml)
-     display(friends)
+     display(FRIENDS)
  }
- 
 
  async function updateTrust(ev) {
      let [callee,caller] = functionNameJS();
@@ -210,59 +208,68 @@
      console.log(callee+'.key:',key)
      console.log(callee+'.peerkey:',peerkey)
 
-     console.log(callee+'.record.before:',JSON.stringify(friends[key]))
-     console.log(callee+'.record.trust.before:',friends[key].trust)
-     friends[key]['trust'] = ev.target.value
-     console.log(callee+'.record.trust.after:',friends[key].trust)
+     console.log(callee+'.record.before:',JSON.stringify(FRIENDS[key]))
+     console.log(callee+'.record.trust.before:',FRIENDS[key].trust)
+     FRIENDS[key]['trust'] = ev.target.value
+     console.log(callee+'.record.trust.after:',FRIENDS[key].trust)
      
-     let yml = window.jsyaml.safeDump(friends)
+     let yml = window.jsyaml.safeDump(FRIENDS)
      let hash = await ipfsWriteContent(PEERIDSFILE,"--- # friends list (yaml)\n"+yml)
-     
  }
 
  async function addFriend(ev) {
-     console.log('ev:',ev)
+     let [callee,caller] = functionNameJS();
+     console.log(callee+'.input.ev:',ev)
+     
      let form = ev.target.parentNode;
-     console.log('form:',form)
+     console.log(callee+'.form:',form)
      let query = getQuery(form);
      let json = query2json(query)
-     console.log('json:',json)
+     console.log(callee+'.json:',json)
      json.nickname = json.nickname.replace(/\s+$/,'')
      json.nickname = json.nickname.replace(/\s+/g,'-')
      let key = getNid('urn:ipns:'+json.peerkey)
      
-     friends[key] = json; // merge w/ existing friends list
-     console.log('friends:',friends)
-     let yml = window.jsyaml.safeDump(friends)
-     console.log('yml:',yml)
+     FRIENDS[key] = json; // merge w/ existing friends list
+     console.log('FRIENDS:',FRIENDS)
+     let yml = window.jsyaml.safeDump(FRIENDS)
+     console.log(callee+'.yml:',yml)
      let hash = await ipfsWriteContent(PEERIDSFILE,"--- # friends list (yaml)\n"+yml)
-     display(friends)
-     
+
+     display(FRIENDS)
  }
  
- function clear_table(t,pos) {
-     console.log('t:',t)
-     let p = t.rows.length+pos+1
-     t.rows[p].style.display=''; 
-     //t.rows[p].style.display='none'; 
-     for (i = p-1; i > 0; i--) {
-	 t.deleteRow(i)
+ function clear_table(tab,pos) {
+     let [callee,caller] = functionNameJS();
+     console.log(callee+'.input.tab:',tab)
+     console.log(callee+'.input.pos:',pos)
+     
+     let template_row_index = tab.rows.length+pos+1
+     console.log(callee+'.template_row_index:',template_row_index)
+     //tab.rows[template_row_index].style.display=''; // display template-row
+     tab.rows[template_row_index].style.display='none'; // hide template-row
+     for (i = template_row_index-1; i > 0; i--) {
+	 tab.deleteRow(i)
      }
-     console.log('nrow after delete:',t.rows.length)
+     console.log('nb of rows after delete:',tab.rows.length)
  }
 
- function replacePeerIdInForm(id) { 
+ function replacePeerIdInForm(peerid) { 
+     let [callee,caller] = functionNameJS();
+     console.log(callee+'.input.peerid:',peerid)
+
      let forms = document.getElementsByTagName('form');
-     console.log('forms: ',forms);
+     console.log(callee+'.forms:',forms);
      if (forms.length > 0) {
-	 let e = forms[0].elements['peerid'];
-	 console.log('peerid: '+id)
-	 if (typeof(e) != 'undefined') {
-	     console.log(e.outerHTML)
-	     e.value = e.value.replace(new RegExp(':peerid','g'),id)
+	 let ele = forms[0].elements['peerid'];
+	 console.log(callee+'.ele:',ele)
+	 if (typeof(ele) != 'undefined') {
+	     console.log(callee+'.before.ele.value',ele.value)
+	     ele.value = ele.value.replace(new RegExp(':peerid','g'),peerid)
+	     console.log(callee+'.after.ele.value',ele.value)
 	 }
      }
-     return id
+     return peerid
  }
 
 </script>
