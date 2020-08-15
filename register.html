@@ -252,8 +252,8 @@
      console.log(callee+'.template_row_index:',template_row_index)
      console.log(callee+'.tab.rows:',tab.rows)
      console.log(callee+'.tab.rows[template_row_index]:',tab.rows[template_row_index])
-     //tab.rows[template_row_index].style.display='';  
-     tab.rows[template_row_index].style.display='none'; // hide template row 
+     //tab.rows[template_row_index].style.display='';  // display template-row 
+     tab.rows[template_row_index].style.display='none'; // hide template-row 
      for (i = template_row_index-1; i > 0; i--) {
 	 tab.deleteRow(i)
      }
