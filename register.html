@@ -22,7 +22,7 @@
 
 <div id=output>
 <h3>friends list</h3>
-<table id=friendstableid>
+<table id=friends_tableid>
     <tr><th>#</th><th>pic.</th><th>nickname</th><th>peerkey</th><th>fullname</th><th>from</th><th>trust</th>
 	<th>nid</th><th>obs.</th><th>ping</th><th>remove</th>
 	<tr><td>:idx</td>
@@ -96,13 +96,13 @@
 
  function display(friends_map) {
      let [callee,caller] = functionNameJS();
+     console.log(callee+'.input.friends_map:',friends_map)
 
-     let table = document.getElementById('friendstableid')
+     let table = document.getElementById('friends_tableid')
      let pos = 1;
      clear_table(table,-2);
      let last = table.rows.length-1;
      let lastrow = table.rows[last];
-     console.log(callee+'.friends_map:',friends_map)
      console.log(callee+'.friends_map.keys:',Object.keys(friends_map))
      
      for (let i in Object.keys(friends_map)) {
